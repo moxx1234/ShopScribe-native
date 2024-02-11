@@ -1,12 +1,11 @@
 import Config from 'react-native-config'
-import EncryptedStorage from 'react-native-encrypted-storage';
+import EncryptedStorage from 'react-native-encrypted-storage'
 
 const BACK_URL = Config.REACT_APP_DEV_BACKEND_URL
 const headers = { 'Content-Type': 'application/json' }
 
 export const authenticateUser = async (action, userData) => {
 	const URL = `${BACK_URL}/auth/${action}`
-	console.log(URL)
 	const body = JSON.stringify({
 		email: userData.email,
 		password: userData.password

@@ -1,4 +1,4 @@
-import EncryptedStorage from 'react-native-encrypted-storage';
+import EncryptedStorage from 'react-native-encrypted-storage'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import * as yup from 'yup'
 import { authenticateUser, authorizeUser } from '../../../api/auth'
@@ -24,7 +24,6 @@ const SignInScreen = ({ navigation }) => {
 		authenticateUser('login', values)
 			.then(async (response) => {
 				await EncryptedStorage.setItem('token', response.JWT)
-				console.log(response)
 				authorizeUser(response.JWT).then(response => {
 					updateUserState({ type: 'login', setAdmin: response.isAdmin })
 				})

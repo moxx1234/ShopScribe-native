@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { RefreshControl, StyleSheet, View } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
+import { StyleSheet, View } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import * as yup from 'yup'
 import { addProduct, getProducts } from '../../../api/products'
@@ -9,16 +8,24 @@ import IconButton from '../../components/IconButton'
 import Form from '../../components/form/Form'
 import InputGroup from '../../components/form/InputGroup'
 import SubmitButton from '../../components/form/SubmitButton'
-import Table from '../../components/table/Table'
+import ProductsList from './ProductsList'
+import { useAuth } from '../../context/UserProvider'
+
+const unitsList = ['кг.', 'шт.', 'литр', 'метр']
+const dropDownOptions = unitsList.map((unit) => ({ label: unit, value: unit }))
 
 const Products = () => {
 	const [modalOpen, setModalOpen] = useState(false)
-	const [isRefreshing, setIsRefreshing] = useState(false)
+	const [isLoading, setIsLoading] = useState(true)
 	const [products, setProducts] = useState()
+	const { isAdmin } = useAuth()
 
 	useEffect(() => {
 		getProducts()
-			.then(response => setProducts(response.products))
+			.then(response => {
+				setProducts(response.products)
+				setIsLoading(false)
+			})
 			.catch(error => console.error(error))
 	}, [])
 
@@ -51,49 +58,57 @@ const Products = () => {
 		setModalOpen(false)
 	}
 	const handleRefresh = () => {
-		setIsRefreshing(true)
+		setIsLoading(true)
 		getProducts()
 			.then(response => {
 				setProducts(response.products)
 			})
 			.catch(error => console.error(error))
-			.finally(() => setIsRefreshing(false))
-	}
-
-	const tableData = {
-		titles: products?.length && Object.keys(products[0]).filter(title => title === 'name' || title === 'quantity' || title === 'price' || title === 'units'),
-		body: products
+			.finally(() => setIsLoading(false))
 	}
 
 	return (
 		<View style={{ flex: 1 }}>
-			<CustomModal isOpen={modalOpen} onClose={handleClose} title='Добавить товар'>
-				<Form initialValues={initialValues} schema={schema} onSubmit={handleSubmit}>
-					<InputGroup name='name' label='Название' type='text' />
-					<InputGroup name='category' label='Категория' type='text' />
-					<InputGroup name='units' label='Единицы измерения' type='text' />
-					<InputGroup name='price' label='Цена' type='number' />
-					<InputGroup name='quantity' label='Количество' type='number' />
-					<SubmitButton title='Создать' />
-				</Form>
-			</CustomModal>
-			<ScrollView
-				refreshControl={<RefreshControl onRefresh={handleRefresh} refreshing={isRefreshing} />}
-			>
-				{products && <Table data={tableData} />}
-			</ScrollView>
-			<IconButton
-				Icon={Ionicons}
-				size={50}
-				name='add-sharp'
-				style={[styles.buttonWrapper, styles.buttonIcon]}
-				onPress={() => setModalOpen(true)}
-			/>
+			<ProductsList onRefresh={handleRefresh} isRefreshing={isLoading} data={products} />
+			{
+				isAdmin && (
+					<>
+						<CustomModal isOpen={modalOpen} onClose={handleClose} title='Добавить товар'>
+							<Form initialValues={initialValues} schema={schema} onSubmit={handleSubmit}>
+								<InputGroup name='name' label='Название' type='text' />
+								<InputGroup name='category' label='Категория' type='text' />
+								<InputGroup
+									name='units'
+									label='Единицы измерения'
+									type='select'
+									isSearchable={false}
+									placeholder='Выбрать'
+									options={dropDownOptions}
+								/>
+								<InputGroup name='price' label='Цена' type='number' />
+								<InputGroup name='quantity' label='Количество' type='number' />
+								<SubmitButton title='Создать' />
+							</Form>
+						</CustomModal>
+						<IconButton
+							Icon={Ionicons}
+							size={50}
+							name='add-sharp'
+							style={[styles.buttonWrapper, styles.buttonIcon]}
+							onPress={() => setModalOpen(true)}
+						/>
+					</>
+				)}
 		</View>
 	)
 }
 
 const addButtonStyle = {
+	container: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center'
+	},
 	buttonWrapper: {
 		backgroundColor: 'rgb(0,122,255)',
 		borderRadius: 50,

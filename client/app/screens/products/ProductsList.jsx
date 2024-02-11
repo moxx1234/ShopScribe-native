@@ -1,38 +1,30 @@
-import { useNavigation } from '@react-navigation/native'
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native"
+import { ScrollView, View, Text, RefreshControl, StyleSheet } from "react-native"
 import Table from "../../components/table/Table"
-import { useEffect, useState } from 'react'
-import { useTheme } from '../../context/ThemeProvider'
+import { useEffect, useState } from "react"
+import { useTheme } from "../../context/ThemeProvider"
 
-const ShopsList = ({ onRefresh, isRefreshing, data }) => {
-	const navigation = useNavigation()
+const ProductsList = ({ onRefresh, isRefreshing, data }) => {
 	const [tableData, setTableData] = useState()
 	const { themeStyles } = useTheme()
 
 	useEffect(() => {
 		if (!data || !data.length) return
 		const newData = {
-			titles: Object.keys(data[0]).filter(title => title === 'name' || title === 'phone' || title === 'address'),
+			titles: Object.keys(data[0]).filter(title => title === 'name' || title === 'quantity' || title === 'price' || title === 'units'),
 			body: data
 		}
 		setTableData(newData)
 	}, [data])
 
-	const handleMarketChoice = (id) => {
-		const marketInfo = data.find(market => market.id === id)
-		navigation.navigate('Shop', { shop: marketInfo })
-	}
-
 	return (
 		data ? (
 			<ScrollView
-				refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}
+				refreshControl={<RefreshControl onRefresh={onRefresh} refreshing={isRefreshing} />}
 				contentContainerStyle={{ flex: 1 }}
 			>
 				{
 					tableData ? <Table
 						data={tableData}
-						onRowPress={handleMarketChoice}
 					/> : (
 						<View style={styles.container}>
 							<Text style={themeStyles.text}>Список пуст!</Text>
@@ -56,4 +48,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default ShopsList
+export default ProductsList

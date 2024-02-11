@@ -48,12 +48,12 @@ const Navigator = () => {
 	const { themeStyles, ...rest } = useTheme()
 	return (
 		<Drawer.Navigator screenOptions={{ headerTintColor: themeStyles.text.color }} drawerContent={(props) => CustomDrawerContent({ ...props, ...rest })}>
-			<Drawer.Screen name='Home' options={{ title: 'Главная' }} component={Main} />
+			<Drawer.Screen name='Home' options={{ title: 'Магазины' }} component={Main} />
 			<Drawer.Screen name='Products' options={{ title: 'Товары' }} component={Products} />
 			{
 				isAdmin && (
 					<>
-						<Drawer.Screen name='AdminPanel' options={{ title: 'Панель управления' }} component={AdminControls} />
+						{/* <Drawer.Screen name='AdminPanel' options={{ title: 'Панель управления' }} component={AdminControls} /> */}
 						<Drawer.Screen name='Reports' options={{ title: 'Отчеты' }} component={Reports} />
 					</>
 				)

@@ -30,7 +30,6 @@ const Shop = ({ route }) => {
 					getSales()
 					return alert(response.message)
 				}
-				console.log(response)
 			})
 			.catch(error => console.error(error))
 	}
