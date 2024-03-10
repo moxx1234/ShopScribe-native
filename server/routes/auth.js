@@ -12,7 +12,10 @@ const actions = ['register', 'login']
 actions.forEach(action => {
 	auth.post((`/${action}`), async (req, res) => {
 		const dbFunction = action === 'register' ? register : login
-		const { status, ...rest } = await dbFunction(req.body).catch(error => error)
+		const { status, ...rest } = await dbFunction(req.body).catch(error => {
+			console.log(error)
+			return error
+		})
 		if (status !== 200) return res.status(status).json(rest)
 		const token = createJWT(rest)
 		res.status(status).json({ JWT: token })

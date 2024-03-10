@@ -7,8 +7,8 @@ const headers = { 'Content-Type': 'application/json' }
 export const authenticateUser = async (action, userData) => {
 	const URL = `${BACK_URL}/auth/${action}`
 	const body = JSON.stringify({
-		email: userData.email,
-		password: userData.password
+		login: userData.login.trim(),
+		password: userData.password.trim()
 	})
 	return await fetch(URL, {
 		method: 'POST',

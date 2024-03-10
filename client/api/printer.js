@@ -17,7 +17,7 @@ const generateText = (data) => {
 }
 
 const checkPermissions = async () => {
-	return await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT)
+	return await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT) && PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN)
 }
 
 export const printReceipt = async (data) => {

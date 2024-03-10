@@ -7,13 +7,11 @@ import CustomModal from "../../components/CustomModal"
 import IconButton from "../../components/IconButton"
 import AddShopForm from "../../components/form/AddShopForm"
 import ShopsList from "../shop/ShopsList"
-import { useAuth } from "../../context/UserProvider"
 
 const Main = () => {
 	const [modalOpen, setModalOpen] = useState(false)
 	const [shops, setShops] = useState()
 	const [isRefreshing, setIsRefreshing] = useState(false)
-	const { isAdmin } = useAuth()
 
 	useEffect(() => {
 		getShops()
@@ -57,26 +55,22 @@ const Main = () => {
 				data={shops}
 				isRefreshing={isRefreshing}
 			/>
-			{isAdmin && (
-				<>
-					<CustomModal
-						isOpen={modalOpen}
-						onClose={handleClose}
-						title='Добавить магазин'
-					>
-						<ScrollView>
-							<AddShopForm onSubmit={handleSubmit} />
-						</ScrollView>
-					</CustomModal>
-					<IconButton
-						Icon={Ionicons}
-						size={50}
-						name='add-sharp'
-						style={[styles.buttonWrapper, styles.buttonIcon]}
-						onPress={handlePress}
-					/>
-				</>
-			)}
+			<CustomModal
+				isOpen={modalOpen}
+				onClose={handleClose}
+				title='Добавить магазин'
+			>
+				<ScrollView>
+					<AddShopForm onSubmit={handleSubmit} />
+				</ScrollView>
+			</CustomModal>
+			<IconButton
+				Icon={Ionicons}
+				size={50}
+				name='add-sharp'
+				style={[styles.buttonWrapper, styles.buttonIcon]}
+				onPress={handlePress}
+			/>
 		</View>
 	)
 }

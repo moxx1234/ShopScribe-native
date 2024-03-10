@@ -13,10 +13,10 @@ const SignInScreen = ({ navigation }) => {
 	const { themeStyles } = useTheme()
 	const updateUserState = useAuthUpdate()
 
-	const initialValues = { email: '', password: '' }
+	const initialValues = { login: '', password: '' }
 
 	const schema = yup.object({
-		email: yup.string().email('Неверный email').required('Введите свой email'),
+		login: yup.string().required('Введите свой логин'),
 		password: yup.string().required('Введите свой пароль')
 	})
 
@@ -24,7 +24,7 @@ const SignInScreen = ({ navigation }) => {
 		authenticateUser('login', values)
 			.then(async (response) => {
 				await EncryptedStorage.setItem('token', response.JWT)
-				authorizeUser(response.JWT).then(response => {
+				authorizeUser().then(response => {
 					updateUserState({ type: 'login', setAdmin: response.isAdmin })
 				})
 			})
@@ -38,7 +38,7 @@ const SignInScreen = ({ navigation }) => {
 		<View style={styles.container}>
 			<Text style={[styles.title, themeStyles.text]}>Войдите, чтобы продолжить!</Text>
 			<Form initialValues={initialValues} schema={schema} onSubmit={handleSubmit}>
-				<InputGroup name='email' label='Email' type='email' />
+				<InputGroup name='login' label='Логин' type='text' />
 				<InputGroup name='password' label='Пароль' type='password' />
 				<SubmitButton title='Войти' />
 			</Form>

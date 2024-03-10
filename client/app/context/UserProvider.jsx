@@ -18,7 +18,8 @@ const userReducer = (state, action) => {
 				...state,
 				isLoading: false,
 				isSignedIn: true,
-				isAdmin: action.setAdmin || state.isAdmin
+				isAdmin: action.setAdmin || state.isAdmin,
+				permissions: action.permissions
 			}
 		}
 		case 'logout': {
@@ -32,7 +33,8 @@ const userReducer = (state, action) => {
 		case 'adminCheck': {
 			return {
 				...state,
-				isAdmin: action.setAdmin
+				isAdmin: action.setAdmin,
+				permissions: action.permissions
 			}
 		}
 	}
@@ -45,8 +47,8 @@ const UserProvider = ({ children }) => {
 
 	useEffect(() => {
 		authorizeUser()
-			.then(response => {
-				dispatch({ type: 'login', setAdmin: response.isAdmin })
+			.then(async (response) => {
+				dispatch({ type: 'login', setAdmin: response.isAdmin, permissions: response.permissions })
 			})
 			.catch((error) => {
 				dispatch({ type: 'logout' })

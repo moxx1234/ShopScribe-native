@@ -20,7 +20,7 @@ const addProduct = async (productInfo) => {
 		.catch(error => {
 			console.log(error)
 			if (error.name === 'SequelizeUniqueConstraintError') {
-				throw { status: 403, message: 'Такое название уже существует. Выберите другое', field: 'name' }
+				throw { status: 409, message: 'Такое название уже существует. Выберите другое', field: 'name' }
 			}
 			throw { status: 500, message: 'Something went wrong' }
 		})

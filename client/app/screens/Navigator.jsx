@@ -53,7 +53,7 @@ const Navigator = () => {
 			{
 				isAdmin && (
 					<>
-						{/* <Drawer.Screen name='AdminPanel' options={{ title: 'Панель управления' }} component={AdminControls} /> */}
+						<Drawer.Screen name='AdminPanel' options={{ title: 'Панель управления' }} component={AdminControls} />
 						<Drawer.Screen name='Reports' options={{ title: 'Отчеты' }} component={Reports} />
 					</>
 				)

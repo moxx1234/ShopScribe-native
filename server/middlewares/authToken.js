@@ -12,8 +12,9 @@ const authenticateToken = (req, res, next) => {
 	})
 }
 const createJWT = (userData) => {
-	const { email, isAdmin } = userData
-	return jwt.sign(({ email, isAdmin }), ACCESS_TOKEN)
+	const { id, isAdmin, permissions } = userData
+	const token = jwt.sign({ id, isAdmin, permissions }, ACCESS_TOKEN)
+	return token
 }
 
 module.exports = { authenticateToken, createJWT }

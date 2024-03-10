@@ -6,27 +6,59 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, pr
 	dialect: 'mysql'
 })
 
+const Organization = sequelize.define('organization', {
+	id: {
+		type: DataTypes.UUID,
+		defaultValue: DataTypes.UUIDV4,
+		primaryKey: true,
+		unique: true
+	},
+	name: {
+		type: DataTypes.STRING,
+		allowNull: false,
+		unique: true
+	},
+})
+
 const User = sequelize.define('user', {
 	id: {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,
 		primaryKey: true,
-		unique: 'id'
+		unique: true
 	},
-	email: {
+	login: {
 		type: DataTypes.STRING,
 		allowNull: false,
-		unique: 'email'
+		unique: true
 	},
 	password: {
 		type: DataTypes.STRING,
 		allowNull: false
 	},
+	name: {
+		type: DataTypes.STRING,
+	},
+	surname: {
+		type: DataTypes.STRING,
+	},
+	phone: {
+		type: DataTypes.STRING,
+	},
 	isAdmin: {
 		type: DataTypes.BOOLEAN,
-		allowNull: false,
-		defaultValue: false
+		defaultValue: false,
+		allowNull: false
 	},
+	permissions: {
+		type: DataTypes.STRING,
+		get() {
+			return this.getDataValue('permissions')?.split(';') || null
+		},
+		set(val) {
+			this.setDataValue('permissions', val?.join(';')) || null
+		}
+	}
 })
 
 const Shop = sequelize.define('shop', {
@@ -34,12 +66,12 @@ const Shop = sequelize.define('shop', {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,
 		primaryKey: true,
-		unique: 'id'
+		unique: true
 	},
 	name: {
 		type: DataTypes.STRING,
 		allowNull: false,
-		unique: 'name'
+		unique: true
 	},
 	owner: {
 		type: DataTypes.STRING,
@@ -63,12 +95,12 @@ const Product = sequelize.define('product', {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,
 		primaryKey: true,
-		unique: 'id'
+		unique: true
 	},
 	name: {
 		type: DataTypes.STRING,
 		allowNull: false,
-		unique: 'name'
+		unique: true
 	},
 	category: {
 		type: DataTypes.STRING,
@@ -93,7 +125,7 @@ const ShopSale = sequelize.define('shop_sale', {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,
 		primaryKey: true,
-		unique: 'id'
+		unique: true
 	},
 	total: {
 		type: DataTypes.INTEGER,
@@ -106,7 +138,7 @@ const ProductSale = sequelize.define('product_sale', {
 		type: DataTypes.UUID,
 		defaultValue: DataTypes.UUIDV4,
 		primaryKey: true,
-		unique: 'id'
+		unique: true
 	},
 	productQty: {
 		type: DataTypes.INTEGER,
@@ -114,6 +146,9 @@ const ProductSale = sequelize.define('product_sale', {
 	},
 })
 
+Organization.hasMany(User)
+User.hasMany(ShopSale)
+ShopSale.belongsTo(User)
 Shop.hasMany(ShopSale)
 ShopSale.belongsTo(Shop)
 ShopSale.hasMany(ProductSale)
@@ -131,4 +166,4 @@ useBcrypt(User, {
 	compare: 'authenticate'
 })
 
-module.exports = { sequelize, User, Shop, Product, ProductSale, ShopSale }
+module.exports = { sequelize, User, Shop, Product, ProductSale, ShopSale, Organization }
