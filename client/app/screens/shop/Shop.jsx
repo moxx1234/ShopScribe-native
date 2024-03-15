@@ -22,8 +22,8 @@ const Shop = ({ route }) => {
 			.catch(error => console.error(error))
 	}, [])
 
-	const handleDealCreate = (addedProducts) => {
-		createDeal(shop.id, addedProducts)
+	const handleDealCreate = (dealInfo) => {
+		createDeal(shop.id, dealInfo)
 			.then(response => {
 				if (response.message) {
 					setModalOpen(false)

@@ -1,9 +1,11 @@
 import Config from 'react-native-config'
+import { setHeaders } from './helpers/headers'
 
 const BACK_URL = Config.REACT_APP_DEV_BACKEND_URL
-const headers = { 'Content-Type': 'application/json' }
 
 export const getDeals = async (shopId = null) => {
+	console.log(setHeaders)
+	const headers = await setHeaders()
 	const query = shopId ? `?${new URLSearchParams({ shopId })}` : ''
 	const URL = `${BACK_URL}/sales${query}`
 	return await fetch(URL, {
@@ -16,10 +18,11 @@ export const getDeals = async (shopId = null) => {
 		.catch(error => { throw error })
 }
 
-export const createDeal = async (shopId, productsInfo) => {
+export const createDeal = async (shopId, dealInfo) => {
 	const URL = `${BACK_URL}/sales/create`
+	const headers = await setHeaders()
 	const body = JSON.stringify({
-		[shopId]: productsInfo
+		[shopId]: dealInfo
 	})
 	return await fetch(URL, {
 		method: 'POST',

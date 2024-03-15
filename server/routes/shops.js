@@ -3,6 +3,7 @@ const { authenticateToken } = require('../middlewares/authToken')
 const { addShop, getAllShops } = require('../database/shops')
 
 const shops = express.Router()
+shops.use(authenticateToken)
 
 shops.get('/all', async (req, res) => {
 	const { status, ...rest } = await getAllShops()
@@ -10,7 +11,7 @@ shops.get('/all', async (req, res) => {
 	res.status(status).json(rest)
 })
 
-shops.post('/add', authenticateToken, async (req, res) => {
+shops.post('/add', async (req, res) => {
 	const { status, ...rest } = await addShop(req.body).catch(error => error)
 	res.status(status).json(rest)
 })

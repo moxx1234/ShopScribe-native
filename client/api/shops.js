@@ -1,16 +1,15 @@
 import Config from 'react-native-config'
-import { getToken } from './auth'
+import { setHeaders } from './helpers/headers'
 
 const BACK_URL = Config.REACT_APP_DEV_BACKEND_URL
-const headers = { 'Content-Type': 'application/json' }
 
 export const addShop = async (shopInfo) => {
-	const userToken = await getToken() || ''
 	const URL = `${BACK_URL}/shops/add`
+	const headers = await setHeaders()
 	const body = JSON.stringify(shopInfo)
 	return await fetch(URL, {
 		method: 'POST',
-		headers: { ...headers, 'Authorization': 'Bearer ' + userToken },
+		headers,
 		body
 	})
 		.then(async (response) => {
@@ -22,6 +21,7 @@ export const addShop = async (shopInfo) => {
 
 export const getShops = async () => {
 	const URL = `${BACK_URL}/shops/all`
+	const headers = await setHeaders()
 	return await fetch(URL, {
 		headers
 	})

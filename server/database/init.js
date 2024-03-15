@@ -88,6 +88,10 @@ const Shop = sequelize.define('shop', {
 	remark: {
 		type: DataTypes.TEXT,
 	},
+	debt: {
+		type: DataTypes.INTEGER,
+		defaultValue: 0,
+	},
 })
 
 const Product = sequelize.define('product', {
@@ -130,6 +134,10 @@ const ShopSale = sequelize.define('shop_sale', {
 	total: {
 		type: DataTypes.INTEGER,
 		allowNull: false
+	},
+	debt: {
+		type: DataTypes.INTEGER,
+		defaultValue: 0
 	}
 })
 
@@ -144,8 +152,13 @@ const ProductSale = sequelize.define('product_sale', {
 		type: DataTypes.INTEGER,
 		allowNull: false
 	},
+	salePrice: {
+		type: DataTypes.INTEGER,
+		allowNull: false
+	}
 })
 
+// Models relations
 Organization.hasMany(User)
 User.hasMany(ShopSale)
 ShopSale.belongsTo(User)

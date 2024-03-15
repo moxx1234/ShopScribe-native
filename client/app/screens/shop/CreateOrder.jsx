@@ -1,15 +1,32 @@
-import { useState } from "react"
-import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-native"
+import { useEffect, useState } from "react"
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import * as yup from 'yup'
 import Form from "../../components/form/Form"
 import InputGroup from "../../components/form/InputGroup"
 import SubmitButton from '../../components/form/SubmitButton'
-import { useTheme } from "../../context/ThemeProvider"
 import Table from "../../components/table/Table"
+import { useTheme } from "../../context/ThemeProvider"
+import DebtInput from "./DebtInput"
 
 const CreateOrder = ({ products, onDealCreate }) => {
 	const [addedProducts, setAddedProducts] = useState([])
+	const [payedAmount, setPayedAmount] = useState(0)
+	const [totalAmount, setTotalAmount] = useState(0)
+	const [debt, setDebt] = useState(0)
+	const [withDebt, setWithDept] = useState(false)
 	const { themeStyles } = useTheme()
+
+	useEffect(() => {
+		const total = addedProducts.reduce((result, product) => {
+			return result += product.total
+		}, 0)
+		setTotalAmount(total)
+	}, [addedProducts])
+
+	useEffect(() => {
+		if (withDebt) setDebt(totalAmount - payedAmount)
+		else setDebt(0)
+	}, [payedAmount, totalAmount, withDebt])
 
 	const initialValues = { product: '', quantity: '' }
 
@@ -35,6 +52,15 @@ const CreateOrder = ({ products, onDealCreate }) => {
 		})
 		onSubmitProps.resetForm()
 		onSubmitProps.setSubmitting(false)
+	}
+
+	const handleDealCreate = () => {
+		const dealInfo = {
+			products: addedProducts,
+			debt,
+			total: totalAmount
+		}
+		onDealCreate(dealInfo)
 	}
 
 	const formatOptions = (data) => {
@@ -73,7 +99,18 @@ const CreateOrder = ({ products, onDealCreate }) => {
 				{!!addedProducts.length && (
 					<View>
 						<Table data={tableData} />
-						<TouchableOpacity style={styles.buttonWrapper} onPress={() => onDealCreate(addedProducts)}>
+						<DebtInput
+							debt={debt}
+							onChange={(value) => setPayedAmount(value)}
+							value={payedAmount || ''}
+							isDebt={withDebt}
+							onToggleDept={() => setWithDept(previousState => !previousState)}
+						/>
+						<View style={styles.rowContainer}>
+							<Text style={[themeStyles.text, styles.text]}>Итого:</Text>
+							<Text style={[themeStyles.text, styles.text]}>{totalAmount}</Text>
+						</View>
+						<TouchableOpacity style={styles.buttonWrapper} onPress={handleDealCreate}>
 							<Text style={styles.buttonText}>Создать продажу</Text>
 						</TouchableOpacity>
 					</View>
@@ -88,6 +125,18 @@ const styles = StyleSheet.create({
 	title: {
 		fontSize: 24,
 		marginVertical: 15
+	},
+	rowContainer: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		marginTop: 10,
+		gap: 10,
+	},
+	text: {
+		fontSize: 20
+	},
+	error: {
+		color: 'red'
 	},
 	buttonWrapper: {
 		backgroundColor: 'rgb(0,122,255)',

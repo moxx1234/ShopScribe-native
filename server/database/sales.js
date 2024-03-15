@@ -1,4 +1,4 @@
-const { Op } = require('sequelize')
+const { Op, where } = require('sequelize')
 const { sequelize, ProductSale, Product, ShopSale, Shop } = require('./init')
 
 const getSales = async (shopId) => {
@@ -39,11 +39,10 @@ const getSales = async (shopId) => {
 	return { status: 200, sales }
 }
 
-const createSale = async (dealInfo) => {
-	const [shopId, products] = Object.entries(dealInfo)[0]
-	const total = products.reduce((result, product) => {
-		return result += product.total
-	}, 0)
+const createSale = async (saleInfo, user) => {
+	console.log(user)
+	const [shopId, dealInfo] = Object.entries(saleInfo)[0]
+	const { products, debt, total } = dealInfo
 
 	try {
 		const productsFromTable = await Product.findAll({
@@ -61,20 +60,26 @@ const createSale = async (dealInfo) => {
 		})
 
 		await sequelize.transaction(async (transaction) => {
-			const saleObj = await ShopSale.create({ shopId, total }, { transaction })
+			const saleObj = await ShopSale.create({ shopId, total, userId: user.id, debt }, { transaction })
 				.then(response => response.dataValues)
 			const productSales = products.map(product => {
-				const { id, quantity, ...rest } = product
-				const shopSaleId = saleObj.id,
-					productId = id,
-					productQty = quantity
-				return { productId, productQty, shopSaleId, ...rest }
+				const { id, quantity, price, ...rest } = product
+
+				return {
+					productId: id,
+					productQty: quantity,
+					salePrice: price,
+					shopSaleId: saleObj.id,
+					...rest
+				}
 			})
 			await ProductSale.bulkCreate(productSales, { transaction })
 			await Product.bulkCreate(productsFromTable, {
 				updateOnDuplicate: ['quantity', 'updatedAt'],
 				transaction
 			})
+			if (debt === 0) return
+			await Shop.update({ 'debt': sequelize.literal(`debt + ${debt}`) }, { where: { id: shopId }, transaction })
 		})
 
 		return { status: 200, message: 'Продажа успешно создана' }
