@@ -1,7 +1,10 @@
 const { Product } = require('./init')
 
-const getAllProducts = async () => {
+const getAllProducts = async (user) => {
 	return await Product.findAll({
+		where: {
+			organizationId: user.organization
+		},
 		order: [
 			['updatedAt', 'DESC']
 		],
@@ -16,7 +19,7 @@ const getAllProducts = async () => {
 
 const addProduct = async (productInfo) => {
 	return await Product.create(productInfo)
-		.then(product => ({ status: 200, id: product.id, message: 'товар добавлен' }))
+		.then(product => ({ status: 200, id: product.id, message: 'Товар добавлен' }))
 		.catch(error => {
 			console.log(error)
 			if (error.name === 'SequelizeUniqueConstraintError') {

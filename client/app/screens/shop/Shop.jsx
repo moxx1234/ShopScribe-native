@@ -7,6 +7,14 @@ import CreateOrder from "./CreateOrder"
 import { createDeal, getDeals } from "../../../api/sales"
 import SalesList from "../../components/SalesList"
 
+const translationMap = {
+	name: 'Название',
+	owner: 'Владелец',
+	phone: 'Телефон',
+	address: 'Адрес',
+	debt: 'Долг'
+}
+
 const Shop = ({ route }) => {
 	const shop = route.params.shop
 
@@ -45,7 +53,7 @@ const Shop = ({ route }) => {
 			{Object.entries(shop).map(([key, value]) => (
 				value && key !== 'id' && (
 					<View key={key} style={styles.container}>
-						<Text style={[themeStyles.text, styles.key]}>{`${key}:`}</Text>
+						<Text style={[themeStyles.text, styles.key]}>{`${translationMap[key]}:`}</Text>
 						<Text style={[themeStyles.text, styles.value]}>{`${value}`}</Text>
 					</View>
 				)

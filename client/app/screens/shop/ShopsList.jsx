@@ -10,7 +10,7 @@ const ShopsList = ({ onRefresh, isRefreshing, data }) => {
 	const { themeStyles } = useTheme()
 
 	useEffect(() => {
-		if (!data || !data.length) return
+		if (!data || !data.length) return setTableData(undefined)
 		const newData = {
 			titles: Object.keys(data[0]).filter(title => title === 'name' || title === 'phone' || title === 'address'),
 			body: data

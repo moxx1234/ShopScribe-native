@@ -4,7 +4,6 @@ import { setHeaders } from './helpers/headers'
 const BACK_URL = Config.REACT_APP_DEV_BACKEND_URL
 
 export const getDeals = async (shopId = null) => {
-	console.log(setHeaders)
 	const headers = await setHeaders()
 	const query = shopId ? `?${new URLSearchParams({ shopId })}` : ''
 	const URL = `${BACK_URL}/sales${query}`

@@ -160,14 +160,18 @@ const ProductSale = sequelize.define('product_sale', {
 
 // Models relations
 Organization.hasMany(User)
+Organization.hasMany(Shop)
+Organization.hasMany(Product)
 User.hasMany(ShopSale)
 ShopSale.belongsTo(User)
 Shop.hasMany(ShopSale)
+Shop.belongsTo(Organization)
 ShopSale.belongsTo(Shop)
 ShopSale.hasMany(ProductSale)
 ProductSale.belongsTo(ShopSale)
 ProductSale.belongsTo(Product)
 Product.hasMany(ProductSale)
+Product.belongsTo(Organization)
 
 sequelize.sync({ alter: true }).then(() => {
 	console.log('tables had been synchronised')

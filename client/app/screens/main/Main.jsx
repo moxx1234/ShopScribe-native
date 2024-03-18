@@ -13,30 +13,29 @@ const Main = () => {
 	const [shops, setShops] = useState()
 	const [isRefreshing, setIsRefreshing] = useState(false)
 
-	useEffect(() => {
-		getShops()
-			.then(response => setShops(response.shops))
-			.catch(error => console.error(error))
-	}, [])
-
-	const handleRefresh = () => {
+	const refresh = () => {
 		setIsRefreshing(true)
 		getShops()
-			.then(response => setShops(response.shops))
+			.then(response => { setShops(response.shops) })
 			.catch(error => console.error(error))
 			.finally(() => setIsRefreshing(false))
 	}
+
+	useEffect(() => {
+		refresh()
+	}, [])
+
 	const handleSubmit = (values, onSubmitProps) => {
 		const trimmedValues = Object.entries(values).reduce((result, [field, value]) => result = ({ ...result, [field]: value.trim() }), {})
 		addShop(trimmedValues)
 			.then(response => {
 				alert(response.message)
 				setModalOpen(false)
-				handleRefresh()
+				refresh()
 			})
 			.catch(error => {
 				if (error.field) return onSubmitProps.setErrors({ [error.field]: [error.message] })
-				if (error.message) return alert(error)
+				if (error.message) return alert(error.message)
 				alert(error)
 			})
 			.finally(() => { onSubmitProps.setSubmitting(false) })
@@ -51,7 +50,7 @@ const Main = () => {
 		<View style={{ flex: 1 }}>
 			<ShopsList
 				modalOpen={modalOpen}
-				onRefresh={handleRefresh}
+				onRefresh={refresh}
 				data={shops}
 				isRefreshing={isRefreshing}
 			/>

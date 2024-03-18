@@ -1,10 +1,11 @@
-const { Op, where } = require('sequelize')
+const { Op } = require('sequelize')
 const { sequelize, ProductSale, Product, ShopSale, Shop } = require('./init')
 
-const getSales = async (shopId) => {
+const getSales = async (shopId, user) => {
 	const sales = await ShopSale.findAll({
 		where: {
-			shopId: shopId || { [Op.not]: null }
+			shopId: shopId,
+			userId: user.isAdmin ? { [Op.not]: null } : user.id
 		},
 		attributes: {
 			exclude: ['shopId', 'updatedAt']
@@ -40,7 +41,6 @@ const getSales = async (shopId) => {
 }
 
 const createSale = async (saleInfo, user) => {
-	console.log(user)
 	const [shopId, dealInfo] = Object.entries(saleInfo)[0]
 	const { products, debt, total } = dealInfo
 

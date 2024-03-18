@@ -38,6 +38,7 @@ const ProductSales = ({ navigation, route }) => {
 				)}
 			</View>
 			<Text style={[themeStyles.text, styles.title, styles.right]}>Итого: {sale.total}</Text>
+			<Text style={[themeStyles.text, styles.title, styles.right]}>Оплачено: {sale.total - sale.debt}</Text>
 		</View>
 	)
 }

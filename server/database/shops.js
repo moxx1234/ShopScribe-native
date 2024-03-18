@@ -1,17 +1,25 @@
-const { Shop } = require('./init')
+const { Shop, Organization } = require('./init')
 
-const getAllShops = async () => {
+const getAllShops = async (user) => {
 	return await Shop.findAll({
+		where: {
+			organizationId: user.organization
+		},
 		order: [
 			['updatedAt', 'DESC']
 		],
-		attributes: ['id', 'name', 'owner', 'phone', 'address', 'remark']
+		attributes: {
+			exclude: ['createdAt', 'updatedAt', 'organizationId']
+		}
 	})
 		.then(shops => {
-			const result = shops.map(shop => shop.dataValues)
+			const result = shops.map(shop => shop.dataValues).filter(shop => shop.organization !== null)
 			return { status: 200, shops: result }
 		})
-		.catch(error => { throw { status: 500, message: 'Something went wrong' } })
+		.catch(error => {
+			console.log(error)
+			throw { status: 500, message: 'Something went wrong' }
+		})
 }
 
 const addShop = async (shopInfo) => {
