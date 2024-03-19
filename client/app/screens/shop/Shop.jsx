@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { getProducts } from '../../../api/products'
 import CustomModal from "../../components/CustomModal"
@@ -6,6 +6,7 @@ import { useTheme } from '../../context/ThemeProvider'
 import CreateOrder from "./CreateOrder"
 import { createDeal, getDeals } from "../../../api/sales"
 import SalesList from "../../components/SalesList"
+import { useIsFocused } from "@react-navigation/native"
 
 const translationMap = {
 	name: 'Название',
@@ -18,19 +19,26 @@ const translationMap = {
 
 const Shop = ({ route }) => {
 	const shop = route.params.shop
-	console.log(shop, Object.entries(shop))
 
 	const { themeStyles } = useTheme()
 	const [modalOpen, setModalOpen] = useState(false)
 	const [products, setProducts] = useState([])
 	const [sales, setSales] = useState([])
+	const isFocused = useIsFocused()
+	const shopDebt = useMemo(() => {
+		return sales.reduce((total, sale) => total += sale.debt, 0)
+	}, [sales])
 
 	useEffect(() => {
-		getSales()
 		getProducts()
 			.then(response => setProducts(response.products))
 			.catch(error => console.error(error))
 	}, [])
+
+	useEffect(() => {
+		if (!isFocused) return
+		getSales()
+	}, [isFocused])
 
 	const handleDealCreate = (dealInfo) => {
 		createDeal(shop.id, dealInfo)
@@ -56,7 +64,7 @@ const Shop = ({ route }) => {
 				value.toString() && key !== 'id' && (
 					<View key={key} style={styles.container}>
 						<Text style={[themeStyles.text, styles.key]}>{`${translationMap[key]}:`}</Text>
-						<Text style={[themeStyles.text, styles.value]}>{`${value.toString()}`}</Text>
+						<Text style={[themeStyles.text, styles.value]}>{`${key !== 'debt' ? value.toString() : shopDebt}`}</Text>
 					</View>
 				)
 			)

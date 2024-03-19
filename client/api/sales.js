@@ -34,3 +34,19 @@ export const createDeal = async (shopId, dealInfo) => {
 		})
 		.catch(error => { throw error })
 }
+
+export const payDebt = async (debtInfo) => {
+	const URL = `${BACK_URL}/sales/payDebt`
+	const headers = await setHeaders()
+	const body = JSON.stringify(debtInfo)
+	return await fetch(URL, {
+		method: 'POST',
+		headers,
+		body
+	})
+		.then(async (response) => {
+			if (!response.ok) throw await response.json()
+			return response.json()
+		})
+		.catch(error => { throw error })
+}

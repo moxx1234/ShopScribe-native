@@ -7,32 +7,32 @@ const getSales = async (shopId, user) => {
 			shopId: shopId,
 			userId: user.isAdmin ? { [Op.not]: null } : user.id
 		},
-		attributes: {
-			exclude: ['shopId', 'updatedAt']
-		},
 		order: [
 			['createdAt', 'DESC']
 		],
-		include: [{
-			model: Shop,
-			attributes: ['name'],
-			required: true
-		}, {
-			model: ProductSale,
-			attributes: ['productQty'],
-			include: [{
-				model: Product,
-				attributes: ['name', 'price'],
+		include: [
+			{
+				model: Shop,
+				attributes: ['name'],
 				required: true
-			}]
-		}]
+			},
+			{
+				model: ProductSale,
+				attributes: ['productQty', 'salePrice'],
+				include: [{
+					model: Product,
+					attributes: ['name'],
+					required: true
+				}]
+			}
+		]
 	}).then(response => response.map(sale => {
 		const result = sale.dataValues
 		result.shop = result.shop.dataValues.name
 		result.product_sales = result.product_sales.map(productSale => {
 			const sale = productSale.dataValues
 			sale.product = sale.product.dataValues
-			sale.total = sale.productQty * sale.product.price
+			sale.total = sale.productQty * sale.salePrice
 			return sale
 		})
 		return result
@@ -88,7 +88,22 @@ const createSale = async (saleInfo, user) => {
 		console.log(error)
 		throw { status: 500, message: 'Something went wrong' }
 	}
-
 }
 
-module.exports = { createSale, getSales }
+const payDebt = async (debtInfo) => {
+	const { id, amount, shopId } = debtInfo
+	try {
+		await sequelize.transaction(async (transaction) => {
+			const saleUpdate = ShopSale.update({ debt: 0 }, { where: { id }, transaction })
+			const shopUpdate = Shop.update({ 'debt': sequelize.literal(`debt - ${amount}`) }, { where: { id: shopId }, transaction })
+
+			await Promise.all([saleUpdate, shopUpdate]).then(result => console.log(result))
+		})
+		return { status: 200, message: 'Долг погашен!' }
+	} catch (error) {
+		console.log(error)
+		throw { status: 500, message: 'Something went wrong' }
+	}
+}
+
+module.exports = { createSale, getSales, payDebt }

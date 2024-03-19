@@ -14,10 +14,7 @@ const SalesList = ({ sales }) => {
 		titles: Object.keys(data[0]).filter(title => (
 			title === 'total' || title === 'debt' || title === 'date'
 		)),
-		body: data.map(sale => {
-			const { shop, product_sales, ...rest } = sale
-			return rest
-		})
+		body: data
 	}
 
 	const handleRowPress = (rowId) => {

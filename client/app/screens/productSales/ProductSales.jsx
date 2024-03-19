@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react"
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native"
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native"
 import { useTheme } from "../../context/ThemeProvider"
 import { getFullDate } from "../../helpers/formatDate"
 import { printReceipt } from "../../../api/printer"
 import BluetoothStateManager from "react-native-bluetooth-state-manager"
+import { payDebt } from "../../../api/sales"
 
 const ProductSales = ({ navigation, route }) => {
-	const { themeStyles } = useTheme()
 	const sale = route.params.saleInfo
+
+	const { themeStyles } = useTheme()
 	const [isPrinting, setIsPrinting] = useState(false)
+	const [saleDebt, setSaleDebt] = useState(sale.debt)
 
 	useEffect(() => {
 		navigation.setOptions({
@@ -22,23 +25,41 @@ const ProductSales = ({ navigation, route }) => {
 		setIsPrinting(true)
 		printReceipt(sale).finally(() => setIsPrinting(false))
 	}
+	const closeDebt = () => {
+		Alert.alert('Погасить долг', `Подтвердите погашение долга. \nСумма: ${saleDebt}`, [
+			{ text: 'Подтвердить', onPress: proceedDebtPayment },
+			{ text: 'Отменить', style: 'cancel' }
+		], {
+			cancelable: true
+		})
+	}
+	const proceedDebtPayment = async () => {
+		payDebt({ id: sale.id, amount: saleDebt, shopId: sale.shopId })
+	}
 
 	return (
 		<View style={styles.container}>
-			<TouchableOpacity style={styles.buttonContainer} onPress={print} disabled={isPrinting}>
-				<Text style={styles.buttonText}>Распечатать чек</Text>
-			</TouchableOpacity>
+			<View style={styles.rowContainer}>
+				<TouchableOpacity style={styles.buttonContainer} onPress={print} disabled={isPrinting}>
+					<Text style={styles.buttonText}>Распечатать чек</Text>
+				</TouchableOpacity>
+				{saleDebt > 0 && (
+					<TouchableOpacity style={styles.buttonContainer} onPress={closeDebt}>
+						<Text style={styles.buttonText}>Погасить долг за продажу</Text>
+					</TouchableOpacity>
+				)}
+			</View>
 			<Text style={[themeStyles.text, styles.title]}>Магазин: {sale.shop}</Text>
 			<Text style={[themeStyles.text, styles.title]}>Дата: {getFullDate(new Date(sale.createdAt))}</Text>
 			<View style={styles.section}>
 				<Text style={[themeStyles.text, styles.title]}>Товары:</Text>
 				{sale.product_sales.map((product, index) => (
-					<Text style={[themeStyles.text, styles.row]} key={index}>{product.product.name} - {product.product.price} * {product.productQty} = {product.total}</Text>
+					<Text style={[themeStyles.text, styles.row]} key={index}>{product.product.name} - {product.salePrice} * {product.productQty} = {product.total}</Text>
 				)
 				)}
 			</View>
 			<Text style={[themeStyles.text, styles.title, styles.right]}>Итого: {sale.total}</Text>
-			<Text style={[themeStyles.text, styles.title, styles.right]}>Оплачено: {sale.total - sale.debt}</Text>
+			{saleDebt > 0 && <Text style={[themeStyles.text, styles.title, styles.right]}>Долг: {saleDebt}</Text>}
 		</View>
 	)
 }
@@ -46,6 +67,11 @@ const ProductSales = ({ navigation, route }) => {
 const styles = StyleSheet.create({
 	container: {
 		padding: 10
+	},
+	rowContainer: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		flexWrap: 'wrap'
 	},
 	title: {
 		fontSize: 20,
@@ -63,7 +89,6 @@ const styles = StyleSheet.create({
 		alignSelf: 'flex-end'
 	},
 	buttonContainer: {
-		marginRight: 'auto',
 		marginBottom: 5,
 		backgroundColor: 'rgb(0,122,255)',
 		borderRadius: 5,

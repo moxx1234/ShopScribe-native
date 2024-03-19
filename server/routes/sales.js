@@ -1,5 +1,5 @@
 const express = require('express')
-const { createSale, getSales } = require('../database/sales')
+const { createSale, getSales, payDebt } = require('../database/sales')
 const { authenticateToken } = require('../middlewares/authToken')
 const checkOrganization = require('../middlewares/checkOrg')
 
@@ -14,6 +14,11 @@ sales.get('/', async (req, res) => {
 
 sales.post('/create', async (req, res) => {
 	const { status, ...rest } = await createSale(req.body, req.user).catch(error => error)
+	res.status(status).json(rest)
+})
+
+sales.post('/payDebt', async (req, res) => {
+	const { status, ...rest } = await payDebt(req.body).catch(error => error)
 	res.status(status).json(rest)
 })
 
