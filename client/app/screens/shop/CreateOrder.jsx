@@ -39,15 +39,20 @@ const CreateOrder = ({ products, onDealCreate }) => {
 		const productFromCatalogue = products.find(product => product.id === values.product)
 		const { id, name, price, quantity, units } = productFromCatalogue
 		setAddedProducts(prevAdded => {
+			if (quantity === 0) return prevAdded
 			const existingProductIndex = prevAdded.findIndex(product => product.id === id)
+			// If product had been added
 			if (existingProductIndex !== -1) {
-				prevAdded[existingProductIndex].quantity += Number(values.quantity)
-				prevAdded[existingProductIndex].total += price * values.quantity
-				return [...prevAdded]
+				let sellingQty = 0
+				if (Number(quantity) >= Number(values.quantity) + Number(prevAdded[existingProductIndex].quantity)) sellingQty = Number(values.quantity)
+				else sellingQty = Number(quantity) - prevAdded[existingProductIndex].quantity
+				prevAdded[existingProductIndex].quantity += sellingQty
+				prevAdded[existingProductIndex].total += price * sellingQty
+				return prevAdded
 			}
 			return [
 				...prevAdded,
-				{ id, name, quantity: Number(quantity) >= Number(values.quantity) && Number(values.quantity), units, price, total: values.quantity * price }
+				{ id, name, quantity: Number(quantity) >= Number(values.quantity) ? Number(values.quantity) : Number(quantity), units, price, total: values.quantity * price }
 			]
 		})
 		onSubmitProps.resetForm()

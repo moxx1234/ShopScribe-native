@@ -1,4 +1,4 @@
-const { Shop, Organization } = require('./init')
+const { Shop } = require('./init')
 
 const getAllShops = async (user) => {
 	return await Shop.findAll({

@@ -12,11 +12,13 @@ const translationMap = {
 	owner: 'Владелец',
 	phone: 'Телефон',
 	address: 'Адрес',
-	debt: 'Долг'
+	debt: 'Долг',
+	remark: 'Примечание'
 }
 
 const Shop = ({ route }) => {
 	const shop = route.params.shop
+	console.log(shop, Object.entries(shop))
 
 	const { themeStyles } = useTheme()
 	const [modalOpen, setModalOpen] = useState(false)
@@ -51,13 +53,14 @@ const Shop = ({ route }) => {
 	return (
 		<ScrollView style={{ padding: 15 }}>
 			{Object.entries(shop).map(([key, value]) => (
-				value && key !== 'id' && (
+				value.toString() && key !== 'id' && (
 					<View key={key} style={styles.container}>
 						<Text style={[themeStyles.text, styles.key]}>{`${translationMap[key]}:`}</Text>
-						<Text style={[themeStyles.text, styles.value]}>{`${value}`}</Text>
+						<Text style={[themeStyles.text, styles.value]}>{`${value.toString()}`}</Text>
 					</View>
 				)
-			))}
+			)
+			)}
 			<View style={styles.section}>
 				{!!products.length && (
 					<CustomModal isOpen={modalOpen} onClose={() => setModalOpen(false)} title='Создать продажу'>

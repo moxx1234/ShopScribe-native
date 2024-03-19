@@ -11,7 +11,9 @@ const SalesList = ({ sales }) => {
 	})
 
 	const tableData = {
-		titles: Object.keys(data[0]).filter(title => (title !== 'id' && title !== 'shop' && title !== 'product_sales' && title !== 'createdAt')),
+		titles: Object.keys(data[0]).filter(title => (
+			title === 'total' || title === 'debt' || title === 'date'
+		)),
 		body: data.map(sale => {
 			const { shop, product_sales, ...rest } = sale
 			return rest
