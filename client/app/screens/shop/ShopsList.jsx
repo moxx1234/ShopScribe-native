@@ -24,27 +24,25 @@ const ShopsList = ({ onRefresh, isRefreshing, data }) => {
 	}
 
 	return (
-		data ? (
-			<ScrollView
-				refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}
-				contentContainerStyle={{ flex: 1 }}
-			>
-				{
-					tableData ? <Table
-						data={tableData}
-						onRowPress={handleMarketChoice}
-					/> : (
-						<View style={styles.container}>
-							<Text style={themeStyles.text}>Список пуст!</Text>
-						</View>
-					)
-				}
-			</ScrollView>
-		) : (
-			<View style={styles.container}>
-				<Text style={themeStyles.text}>Загрузка...</Text>
-			</View>
-		)
+		<ScrollView
+			refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}
+			contentContainerStyle={{ flex: 1 }}
+		>
+			{data ? (
+				tableData ? <Table
+					data={tableData}
+					onRowPress={handleMarketChoice}
+				/> : (
+					<View style={styles.container}>
+						<Text style={themeStyles.text}>Список пуст!</Text>
+					</View>
+				)
+			) : (
+				<View style={styles.container}>
+					<Text style={themeStyles.text}>Загрузка...</Text>
+				</View>
+			)}
+		</ScrollView>
 	)
 }
 

@@ -78,8 +78,6 @@ const createSale = async (saleInfo, user) => {
 				updateOnDuplicate: ['quantity', 'updatedAt'],
 				transaction
 			})
-			if (debt === 0) return
-			await Shop.update({ 'debt': sequelize.literal(`debt + ${debt}`) }, { where: { id: shopId }, transaction })
 		})
 
 		return { status: 200, message: 'Продажа успешно создана' }

@@ -24,9 +24,9 @@ const Products = () => {
 		getProducts()
 			.then(response => {
 				setProducts(response.products)
-				setIsLoading(false)
 			})
 			.catch(error => console.error(error))
+			.finally(() => setIsLoading(false))
 	}, [])
 
 	const initialValues = { name: '', category: '', units: '', price: '', quantity: '' }

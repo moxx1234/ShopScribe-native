@@ -173,6 +173,24 @@ ProductSale.belongsTo(Product)
 Product.hasMany(ProductSale)
 Product.belongsTo(Organization)
 
+// Hooks
+const updateShopDebt = async (shopSale, options) => {
+	const { dataValues } = await ShopSale.findOne({
+		attributes: [[sequelize.fn('sum', sequelize.col('debt')), 'debt']],
+		where: { shopId: shopSale.shopId },
+		transaction: options.transaction
+	})
+
+	await Shop.update(
+		{ debt: dataValues.debt || shopSale.debt || 0 },
+		{ where: { id: shopSale.shopId }, transaction: options.transaction },
+	)
+}
+
+ShopSale.addHook('afterCreate', 'updateShopDebt', updateShopDebt)
+ShopSale.addHook('afterUpdate', 'updateShopDebt', updateShopDebt)
+ShopSale.addHook('afterDestroy', 'updateShopDebt', updateShopDebt)
+
 sequelize.sync({ alter: true }).then(() => {
 	console.log('tables had been synchronised')
 }).catch((err) => console.log('table sync error', err))
