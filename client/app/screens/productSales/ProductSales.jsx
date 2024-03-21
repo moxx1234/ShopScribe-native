@@ -35,6 +35,11 @@ const ProductSales = ({ navigation, route }) => {
 	}
 	const proceedDebtPayment = async () => {
 		payDebt({ id: sale.id, amount: saleDebt, shopId: sale.shopId })
+			.then((response) => {
+				setSaleDebt(0)
+				Alert.alert(response.message)
+			})
+			.catch(error => console.error(error))
 	}
 
 	return (
@@ -49,7 +54,7 @@ const ProductSales = ({ navigation, route }) => {
 					</TouchableOpacity>
 				)}
 			</View>
-			<Text style={[themeStyles.text, styles.title]}>Магазин: {sale.shop}</Text>
+			<Text style={[themeStyles.text, styles.title]}>Магазин: {sale.shop.name}</Text>
 			<Text style={[themeStyles.text, styles.title]}>Дата: {getFullDate(new Date(sale.createdAt))}</Text>
 			<View style={styles.section}>
 				<Text style={[themeStyles.text, styles.title]}>Товары:</Text>

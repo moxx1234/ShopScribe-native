@@ -160,6 +160,7 @@ const ProductSale = sequelize.define('product_sale', {
 
 // Models relations
 Organization.hasMany(User)
+User.belongsTo(Organization)
 Organization.hasMany(Shop)
 Organization.hasMany(Product)
 User.hasMany(ShopSale)

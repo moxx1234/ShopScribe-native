@@ -1,5 +1,5 @@
 const { Op } = require('sequelize')
-const { sequelize, ProductSale, Product, ShopSale, Shop } = require('./init')
+const { sequelize, ProductSale, Product, ShopSale, Shop, Organization, User } = require('./init')
 
 const getSales = async (shopId, user) => {
 	const sales = await ShopSale.findAll({
@@ -13,7 +13,7 @@ const getSales = async (shopId, user) => {
 		include: [
 			{
 				model: Shop,
-				attributes: ['name'],
+				attributes: ['name', ['debt', 'totalDebt']],
 				required: true
 			},
 			{
@@ -24,11 +24,23 @@ const getSales = async (shopId, user) => {
 					attributes: ['name'],
 					required: true
 				}]
+			},
+			{
+				model: User,
+				attributes: ['surname', 'name'],
+				include: [
+					{
+						model: Organization,
+						attributes: ['name'],
+						required: true
+					},
+				],
+				required: true
 			}
 		]
 	}).then(response => response.map(sale => {
 		const result = sale.dataValues
-		result.shop = result.shop.dataValues.name
+		result.shop = result.shop.dataValues
 		result.product_sales = result.product_sales.map(productSale => {
 			const sale = productSale.dataValues
 			sale.product = sale.product.dataValues
@@ -37,6 +49,9 @@ const getSales = async (shopId, user) => {
 		})
 		return result
 	}))
+		.catch(error => {
+			console.log(error)
+		})
 	return { status: 200, sales }
 }
 
