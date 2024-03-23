@@ -1,7 +1,8 @@
 const express = require('express')
 const { authenticateToken } = require('../middlewares/authToken')
-const { createOrg, getUsers, createUser } = require('../database/org')
+const { createOrg, getUsers, createUser, updateUser } = require('../database/org')
 const authenticateAdmin = require('../middlewares/authAdmin')
+const checkOrganization = require('../middlewares/checkOrg')
 
 const organization = express.Router()
 organization.use(authenticateToken, authenticateAdmin)
@@ -12,14 +13,18 @@ organization.post('/create', async (req, res) => {
 })
 
 organization.get('/users', async (req, res) => {
-	const { status, ...rest } = await getUsers(req.user.id)
+	const { status, ...rest } = await getUsers(req.user.id).catch(error => error)
 	res.status(status).json({ ...rest })
 })
 
-organization.post('/create-user', async (req, res) => {
-	console.log(req.body, req.user)
-	createUser(req.user.id, req.body)
-	res.json({ message: 'hello' })
+organization.post('/create-user', checkOrganization, async (req, res) => {
+	const { status, ...rest } = await createUser(req.user.organization, req.body).catch(error => error)
+	res.status(status).json({ ...rest })
+})
+
+organization.put('/update-user', checkOrganization, async (req, res) => {
+	const { status, ...rest } = await updateUser(req.body).catch(error => error)
+	res.status(status).json({ ...rest })
 })
 
 module.exports = organization

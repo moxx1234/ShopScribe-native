@@ -32,7 +32,6 @@ const getUsers = async (userId) => {
 				attributes: { exclude: ['createdAt', 'updatedAt', 'password'] },
 				transaction: t
 			})
-				.then(record => record.map(user => user.dataValues))
 			return { status: 200, [organization.name]: users }
 		})
 		return result
@@ -41,16 +40,10 @@ const getUsers = async (userId) => {
 	}
 }
 
-const createUser = async (adminId, userData) => {
+const createUser = async (organizationId, userData) => {
 	try {
-		const result = await sequelize.transaction(async (t) => {
-			const organizationId = await User.findOne({ where: { id: adminId }, attributes: ['organizationId'], transaction: t })
-				.then(record => Object.values(record.dataValues)[0])
-			await User.create({ ...userData, organizationId })
-				.then(response => response.dataValues)
-			return { status: 200, message: 'Работник успешно добавлен!' }
-		})
-		return result
+		await User.create({ ...userData, organizationId })
+		return { status: 200, message: 'Работник успешно добавлен!' }
 	} catch (error) {
 		if (error.name === 'SequelizeUniqueConstraintError') {
 			throw { status: 403, message: 'Логин занят! Выберите другой', field: 'login' }
@@ -59,4 +52,17 @@ const createUser = async (adminId, userData) => {
 	}
 }
 
-module.exports = { createOrg, getUsers, createUser }
+const updateUser = async (userData) => {
+	const { id, ...rest } = userData
+	try {
+		await User.update(rest, { where: { id } })
+		return { status: 200, message: 'Информация о работнике обновлена!' }
+	} catch (error) {
+		if (error.name === 'SequelizeUniqueConstraintError') {
+			throw { status: 403, message: 'Логин занят! Выберите другой', field: 'login' }
+		}
+		throw { status: 500, message: 'Something went wrong' }
+	}
+}
+
+module.exports = { createOrg, getUsers, createUser, updateUser }

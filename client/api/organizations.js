@@ -34,8 +34,23 @@ export const createUser = async (userData) => {
 		headers,
 		body: JSON.stringify(userData)
 	})
-		.then(response => {
-			console.log(response)
+		.then(async (response) => {
+			if (!response.ok) throw await response.json()
+			return response.json()
 		})
-		.catch(error => console.log(error))
+		.catch(error => { throw error })
+}
+
+export const updateUser = async (userId, userData) => {
+	const headers = await setHeaders()
+	return await fetch(`${BACK_URL}/org/update-user`, {
+		method: 'PUT',
+		headers,
+		body: JSON.stringify({ ...userData, id: userId })
+	})
+		.then(async (response) => {
+			if (!response.ok) throw await response.json()
+			return response.json()
+		})
+		.catch(error => { throw error })
 }
