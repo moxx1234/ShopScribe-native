@@ -2,11 +2,14 @@ const { Op } = require('sequelize')
 const { sequelize, ProductSale, Product, ShopSale, Shop, Organization, User } = require('./init')
 
 const getSales = async (shopId, user) => {
+	const applyCondition = () => {
+		const condition = { shopId }
+		if (user.isAdmin) condition.organizationId = user.organization
+		else condition.userId = user.id
+		return condition
+	}
 	const sales = await ShopSale.findAll({
-		where: {
-			shopId: shopId,
-			userId: user.isAdmin ? { [Op.not]: null } : user.id
-		},
+		where: applyCondition(),
 		order: [
 			['createdAt', 'DESC']
 		],
@@ -28,15 +31,12 @@ const getSales = async (shopId, user) => {
 			{
 				model: User,
 				attributes: ['surname', 'name'],
-				include: [
-					{
-						model: Organization,
-						attributes: ['name'],
-						required: true
-					},
-				],
+			},
+			{
+				model: Organization,
+				attributes: ['name'],
 				required: true
-			}
+			},
 		]
 	}).then(response => response.map(sale => {
 		const result = sale.dataValues
@@ -75,7 +75,7 @@ const createSale = async (saleInfo, user) => {
 		})
 
 		await sequelize.transaction(async (transaction) => {
-			const saleObj = await ShopSale.create({ shopId, total, userId: user.id, debt }, { transaction })
+			const saleObj = await ShopSale.create({ shopId, total, userId: user.id, debt, organizationId: user.organization }, { transaction })
 				.then(response => response.dataValues)
 			const productSales = products.map(product => {
 				const { id, quantity, price, ...rest } = product

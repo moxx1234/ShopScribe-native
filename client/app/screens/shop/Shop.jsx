@@ -26,9 +26,6 @@ const Shop = ({ route }) => {
 	const [products, setProducts] = useState([])
 	const [sales, setSales] = useState([])
 	const isFocused = useIsFocused()
-	const shopDebt = useMemo(() => {
-		return sales.reduce((total, sale) => total += sale.debt, 0)
-	}, [sales])
 	const { isAdmin, permissions } = useAuth()
 
 	useEffect(() => {
@@ -66,7 +63,7 @@ const Shop = ({ route }) => {
 				value.toString() && key !== 'id' && (
 					<View key={key} style={styles.container}>
 						<Text style={[themeStyles.text, styles.key]}>{`${translationMap[key]}:`}</Text>
-						<Text style={[themeStyles.text, styles.value]}>{`${key !== 'debt' ? value.toString() : shopDebt}`}</Text>
+						<Text style={[themeStyles.text, styles.value]}>{`${value.toString()}`}</Text>
 					</View>
 				)
 			)

@@ -23,7 +23,7 @@ const ProductSales = ({ navigation, route }) => {
 		const bluetoothState = await BluetoothStateManager.getState()
 		if (bluetoothState !== 'PoweredOn') return BluetoothStateManager.openSettings()
 		setIsPrinting(true)
-		printReceipt(sale).finally(() => setIsPrinting(false))
+		printReceipt(sale).catch(error => alert(error)).finally(() => setIsPrinting(false))
 	}
 	const closeDebt = () => {
 		Alert.alert('Погасить долг', `Подтвердите погашение долга. \nСумма: ${saleDebt}`, [

@@ -14,7 +14,6 @@ const Main = () => {
 	const [shops, setShops] = useState()
 	const [isRefreshing, setIsRefreshing] = useState(false)
 	const { permissions, isAdmin } = useAuth()
-	console.log(permissions)
 
 	const refresh = () => {
 		setIsRefreshing(true)

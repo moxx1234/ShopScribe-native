@@ -68,3 +68,14 @@ export const deleteUser = async (id) => {
 		})
 		.catch(error => { throw error })
 }
+
+export const getSales = async () => {
+	const headers = await setHeaders()
+	return await fetch(`${BACK_URL}/org/sales`, { headers })
+		.then(async (response) => {
+			if (!response.ok) throw await response.json()
+			if (response.status === 204) return {}
+			return response.json()
+		})
+		.catch(error => { throw error })
+}

@@ -1,4 +1,4 @@
-const { Organization, sequelize, User } = require("./init")
+const { Organization, sequelize, User, ShopSale, Shop, ProductSale, Product } = require("./init")
 
 const createOrg = async (organization, userId) => {
 	try {
@@ -81,4 +81,38 @@ const deleteUser = async (id) => {
 	}
 }
 
-module.exports = { createOrg, getUsers, createUser, updateUser, deleteUser }
+const getSales = async (organization) => {
+	try {
+		const sales = await ShopSale.findAll({
+			where: {
+				organizationId: organization
+			},
+			include: [
+				{
+					model: Shop,
+					attributes: ['name']
+				},
+				{
+					model: ProductSale,
+					attributes: ['salePrice', 'productQty'],
+					include: [
+						{
+							model: Product,
+							attributes: ['name']
+						}
+					]
+				},
+				{
+					model: User,
+					attributes: ['name', 'surname']
+				}
+			]
+		})
+		if (!sales.length) return { status: 204 }
+		return { status: 200, sales }
+	} catch (error) {
+		throw { status: 500, message: 'Something went wrong' }
+	}
+}
+
+module.exports = { createOrg, getUsers, createUser, updateUser, deleteUser, getSales }

@@ -2,10 +2,13 @@ import { useEffect } from "react"
 import { ScrollView, StyleSheet, Text, View } from "react-native"
 import { useTheme } from "../../context/ThemeProvider"
 
-
 const DateReport = ({ navigation, route }) => {
 	const { params } = route
 	const { themeStyles } = useTheme()
+
+	params.sales.forEach(sale => {
+		console.log(sale.product_sales)
+	})
 
 	useEffect(() => {
 		navigation.setOptions({
@@ -18,15 +21,16 @@ const DateReport = ({ navigation, route }) => {
 		<ScrollView>
 			{params.sales.map((marketSale, index) => (
 				<View key={index} style={styles.container}>
-					<Text style={[themeStyles.text, styles.title]}>Магазин: {marketSale.shop}</Text>
+					<Text style={[themeStyles.text, styles.title]}>Магазин: {marketSale.shop.name}</Text>
 					<View style={styles.section}>
 						<Text style={[themeStyles.text, styles.title]}>Товары:</Text>
 						{marketSale.product_sales.map((product, index) => (
-							<Text style={[themeStyles.text, styles.row]} key={index}>{product.product.name}: {product.product.price} * {product.productQty} = {product.total}</Text>
+							<Text style={[themeStyles.text, styles.row]} key={index}>{product.product.name}: {product.salePrice} * {product.productQty} = {product.productQty}</Text>
 						)
 						)}
 					</View>
 					<Text style={[themeStyles.text, styles.title, styles.right]}>Итого: {marketSale.total}</Text>
+					<Text style={[themeStyles.text, styles.title, styles.right]}>Долг: {marketSale.debt}</Text>
 				</View>
 			))}
 		</ScrollView>

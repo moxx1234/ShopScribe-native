@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native"
 import { useEffect, useState } from "react"
 import { authorizeAdmin } from '../../../api/auth'
-import { getDeals } from "../../../api/sales"
+import { getSales } from "../../../api/organizations"
 import Table from "../../components/table/Table"
 import { useAuthUpdate } from '../../context/UserProvider'
 import { getFormattedDate } from "../../helpers/formatDate"
@@ -11,8 +11,10 @@ const Reports = () => {
 	const [sales, setSales] = useState()
 	const navigation = useNavigation()
 
+	console.log(sales)
+
 	useEffect(() => {
-		getDeals()
+		getSales()
 			.then(response => setSales(response.sales))
 			.catch(error => console.error(error))
 		authorizeAdmin()
@@ -25,17 +27,22 @@ const Reports = () => {
 
 	const createTableBody = (data) => {
 		const dayTotals = data.reduce((result, item) => {
-			const { createdAt, total } = item
+			const { createdAt, total, debt } = item
 			const date = getFormattedDate(new Date(createdAt))
-			if (result[date]) result[date] += total
-			else result[date] = total
+			if (result[date]) {
+				result[date] = {
+					total: result[date].total + total,
+					debt: result[date].debt + debt
+				}
+			}
+			else result[date] = { total, debt }
 			return result
 		}, {})
-		return Object.entries(dayTotals).map(([day, total]) => ({ id: day, 'Дата': day, 'Сумма': total }))
+		return Object.entries(dayTotals).map(([day, { total, debt }]) => ({ id: day, 'Дата': day, 'Сумма': total, 'Долг': debt }))
 	}
 
 	const tableData = {
-		titles: ['Дата', 'Сумма'],
+		titles: ['Дата', 'Сумма', 'Долг'],
 		body: sales && createTableBody(sales)
 	}
 
@@ -44,6 +51,7 @@ const Reports = () => {
 		navigation.navigate('Report', { sales: desiredSales, date })
 	}
 	return (
+		// <></>
 		sales && <Table data={tableData} onRowPress={handleDateSelect} />
 	)
 }

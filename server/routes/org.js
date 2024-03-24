@@ -1,6 +1,6 @@
 const express = require('express')
 const { authenticateToken } = require('../middlewares/authToken')
-const { createOrg, getUsers, createUser, updateUser, deleteUser } = require('../database/org')
+const { createOrg, getUsers, createUser, updateUser, deleteUser, getSales } = require('../database/org')
 const authenticateAdmin = require('../middlewares/authAdmin')
 const checkOrganization = require('../middlewares/checkOrg')
 
@@ -29,6 +29,11 @@ organization.put('/update-user', checkOrganization, async (req, res) => {
 
 organization.delete('/delete-user', checkOrganization, async (req, res) => {
 	const { status, ...rest } = await deleteUser(req.body.id).catch(error => error)
+	res.status(status).json({ ...rest })
+})
+
+organization.get('/sales', checkOrganization, async (req, res) => {
+	const { status, ...rest } = await getSales(req.user.organization).catch(error => error)
 	res.status(status).json({ ...rest })
 })
 

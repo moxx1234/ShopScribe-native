@@ -4,13 +4,11 @@ import { getFullDate } from "../app/helpers/formatDate"
 const { ThermalPrinterModule } = NativeModules
 
 const generateText = (data) => {
-	console.log(data)
 	let result = ''
-	const { createdAt, product_sales, total, user, shop, debt } = data
-	const { organization } = user
+	const { createdAt, product_sales, total, user, shop, debt, organization } = data
 	const orgName = `Продавец: ${organization.name}\n`
 	const buyer = `Покупатель: ${shop.name}\n`
-	const seller = `Экспедитор: ${user.surname} ${user.name}. \nПодпись: \n`
+	const seller = user ? `Экспедитор: ${user.surname} ${user.name}. \nПодпись: \n` : ''
 	const payed = `Оплачено: [R]${total - debt}\n`
 	const saleDebt = `В долг: [R]${debt}\n`
 	const totalDebt = `Общий долг: [R]${shop.totalDebt}\n`
