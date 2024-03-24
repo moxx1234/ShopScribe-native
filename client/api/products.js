@@ -32,3 +32,18 @@ export const getProducts = async () => {
 		})
 		.catch(error => { throw error })
 }
+
+export const updateProduct = async (productInfo) => {
+	const URL = `${BACK_URL}/products/update`
+	const headers = await setHeaders()
+	return await fetch(URL, {
+		method: 'PUT',
+		headers,
+		body: JSON.stringify(productInfo)
+	})
+		.then(async (response) => {
+			if (!response.ok) throw await response.json()
+			return response.json()
+		})
+		.catch(error => { throw error })
+}

@@ -2,10 +2,14 @@ import { ScrollView, View, Text, RefreshControl, StyleSheet } from "react-native
 import Table from "../../components/table/Table"
 import { useEffect, useState } from "react"
 import { useTheme } from "../../context/ThemeProvider"
+import { useNavigation } from "@react-navigation/native"
 
 const ProductsList = ({ onRefresh, isRefreshing, data }) => {
 	const [tableData, setTableData] = useState()
 	const { themeStyles } = useTheme()
+	const navigation = useNavigation()
+
+	console.log(data)
 
 	useEffect(() => {
 		if (!data || !data.length) return setTableData(undefined)
@@ -16,15 +20,25 @@ const ProductsList = ({ onRefresh, isRefreshing, data }) => {
 		setTableData(newData)
 	}, [data])
 
+	const handleChoice = (id) => {
+		const product = data.find(product => product.id === id)
+		navigation.navigate('Product', { product })
+	}
+
 	return (
 		<ScrollView
 			refreshControl={<RefreshControl onRefresh={onRefresh} refreshing={isRefreshing} />}
 			contentContainerStyle={{ flex: 1 }}
 		>
 			{data ? (
-				tableData ? <Table
-					data={tableData}
-				/> : (
+				tableData ? (
+					<>
+						<Table
+							data={tableData}
+							onRowPress={handleChoice}
+						/>
+					</>
+				) : (
 					<View style={styles.container}>
 						<Text style={themeStyles.text}>Список пуст!</Text>
 					</View>

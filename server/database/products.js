@@ -29,4 +29,20 @@ const addProduct = async (productInfo) => {
 		})
 }
 
-module.exports = { addProduct, getAllProducts }
+const updateProduct = async ({ id, ...rest }) => {
+	try {
+		const update = await Product.findOne({ where: { id } })
+			.then(product => {
+				if (!product) throw { status: 404, message: 'Товар не найден!' }
+				Object.entries(rest).forEach(([key, value]) => {
+					product[key] = value
+				})
+				product.save()
+			})
+		return { status: 200, message: 'Товар успешно изменен!' }
+	} catch (error) {
+		throw { status: 500, message: 'Something went wrong' }
+	}
+}
+
+module.exports = { addProduct, getAllProducts, updateProduct }

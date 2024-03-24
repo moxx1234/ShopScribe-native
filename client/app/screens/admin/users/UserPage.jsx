@@ -1,11 +1,11 @@
-import { Alert, Button, ScrollView, StyleSheet, Switch, Text, View, TouchableOpacity } from "react-native"
-import { useTheme } from "../../../context/ThemeProvider"
-import Form from "../../../components/form/Form"
-import * as yup from 'yup'
 import { useEffect, useState } from "react"
+import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native"
+import * as yup from 'yup'
+import { deleteUser, updateUser } from "../../../../api/organizations"
+import Form from "../../../components/form/Form"
 import InputGroup from "../../../components/form/InputGroup"
 import SubmitButton from "../../../components/form/SubmitButton"
-import { deleteUser, updateUser } from "../../../../api/organizations"
+import { useTheme } from "../../../context/ThemeProvider"
 import { trimForm } from "../../../helpers/trimForm"
 
 const permissionTitles = {

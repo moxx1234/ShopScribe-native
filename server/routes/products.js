@@ -1,6 +1,6 @@
 const express = require('express')
 const { authenticateToken } = require('../middlewares/authToken')
-const { addProduct, getAllProducts } = require('../database/products')
+const { addProduct, getAllProducts, updateProduct } = require('../database/products')
 const checkOrganization = require('../middlewares/checkOrg')
 
 const products = express.Router()
@@ -14,6 +14,11 @@ products.get('/all', async (req, res) => {
 
 products.post('/add', async (req, res) => {
 	const { status, ...rest } = await addProduct({ ...req.body, organizationId: req.user.organization }).catch(error => error)
+	res.status(status).json(rest)
+})
+
+products.put('/update', async (req, res) => {
+	const { status, ...rest } = await updateProduct(req.body).catch(error => error)
 	res.status(status).json(rest)
 })
 

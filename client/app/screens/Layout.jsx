@@ -12,6 +12,7 @@ import ProductSales from './productSales/ProductSales'
 import Shop from './shop/Shop'
 import DateReport from './dateReport/DateReport.jsx'
 import UserPage from './admin/users/UserPage.jsx'
+import ProductPage from './products/ProductPage.jsx'
 
 const Stack = createNativeStackNavigator()
 
@@ -35,6 +36,7 @@ const Layout = () => {
 											<Stack.Screen name='ProductSales' component={ProductSales} />
 											<Stack.Screen name='Report' component={DateReport} />
 											<Stack.Screen name='User' options={{ title: 'Работник' }} component={UserPage} />
+											<Stack.Screen name='Product' options={{ title: 'Изменить товар' }} component={ProductPage} />
 										</>
 										:
 										<>
