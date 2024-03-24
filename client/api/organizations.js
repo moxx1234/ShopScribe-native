@@ -54,3 +54,17 @@ export const updateUser = async (userId, userData) => {
 		})
 		.catch(error => { throw error })
 }
+
+export const deleteUser = async (id) => {
+	const headers = await setHeaders()
+	return await fetch(`${BACK_URL}/org/delete-user`, {
+		method: 'DELETE',
+		headers,
+		body: JSON.stringify({ id })
+	})
+		.then(async (response) => {
+			if (!response.ok) throw await response.json()
+			return response.json()
+		})
+		.catch(error => { throw error })
+}

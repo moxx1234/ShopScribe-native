@@ -72,4 +72,13 @@ const updateUser = async (userData) => {
 	}
 }
 
-module.exports = { createOrg, getUsers, createUser, updateUser }
+const deleteUser = async (id) => {
+	try {
+		await User.destroy({ where: { id } })
+		return { status: 200, message: 'Пользователь удален' }
+	} catch (error) {
+		throw { status: 500, message: 'Something went wrong' }
+	}
+}
+
+module.exports = { createOrg, getUsers, createUser, updateUser, deleteUser }

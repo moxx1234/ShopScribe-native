@@ -1,11 +1,11 @@
-import { Alert, ScrollView, StyleSheet, Switch, Text, View } from "react-native"
+import { Alert, Button, ScrollView, StyleSheet, Switch, Text, View, TouchableOpacity } from "react-native"
 import { useTheme } from "../../../context/ThemeProvider"
 import Form from "../../../components/form/Form"
 import * as yup from 'yup'
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import InputGroup from "../../../components/form/InputGroup"
 import SubmitButton from "../../../components/form/SubmitButton"
-import { updateUser } from "../../../../api/organizations"
+import { deleteUser, updateUser } from "../../../../api/organizations"
 import { trimForm } from "../../../helpers/trimForm"
 
 const permissionTitles = {
@@ -14,7 +14,7 @@ const permissionTitles = {
 	createSale: 'Создание продажи'
 }
 
-const UserPage = ({ route }) => {
+const UserPage = ({ route, navigation }) => {
 	const user = route.params.user
 	user.permissions = user.permissions !== null ? user.permissions : []
 
@@ -23,6 +23,16 @@ const UserPage = ({ route }) => {
 		addShop: user.permissions.includes('addShop'),
 		addProduct: user.permissions.includes('addProduct'),
 		createSale: user.permissions.includes('createSale')
+	})
+
+	useEffect(() => {
+		navigation.setOptions({
+			headerRight: () => (
+				<TouchableOpacity onPress={removeUser} style={styles.removeButtonContainer}>
+					<Text style={styles.removeButtonText} >Удалить</Text>
+				</TouchableOpacity>
+			)
+		})
 	})
 
 	const initialValues = {
@@ -39,9 +49,9 @@ const UserPage = ({ route }) => {
 	}, {})
 	const schema = yup.object(validationObject)
 
-	const asyncAlert = (password) => {
+	const asyncAlert = (title, message) => {
 		return new Promise((resolve) => {
-			Alert.alert('Новый пароль', `Подтвердите изменение пароля пользователя на ${password}`, [
+			Alert.alert(title, message, [
 				{ text: 'Подтвердить', onPress: () => resolve(true) },
 				{ text: 'Отменить', style: 'cancel', onPress: () => resolve(false) }
 			], { cancelable: false })
@@ -52,7 +62,7 @@ const UserPage = ({ route }) => {
 		let isConfirmed = !values.password
 		const trimmedValues = trimForm(values)
 
-		if (!!trimmedValues.password) isConfirmed = await asyncAlert(trimmedValues.password)
+		if (!!trimmedValues.password) isConfirmed = await asyncAlert('Новый пароль', `Подтвердите изменение пароля пользователя на ${trimmedValues.password}`)
 		else delete trimmedValues.password
 
 		if (!isConfirmed) return onSubmitProps.setSubmitting(false)
@@ -78,6 +88,21 @@ const UserPage = ({ route }) => {
 	}
 	const toggleSwitch = (name) => (value) => {
 		setPermissions(prev => ({ ...prev, [name]: value }))
+	}
+	const removeUser = async () => {
+		let isConfirmed = await asyncAlert('Удалить пользователя', 'Подтвердите удаление пользователя')
+
+		if (!isConfirmed) return
+
+		deleteUser(user.id)
+			.then(response => {
+				alert(response.message)
+				navigation.goBack()
+			})
+			.catch(error => {
+				if (error.message) return alert(error.message)
+				alert(error)
+			})
 	}
 
 	return (
@@ -132,6 +157,16 @@ const styles = StyleSheet.create({
 	},
 	switchText: {
 		fontSize: 20,
+	},
+	removeButtonContainer: {
+		backgroundColor: 'red',
+		padding: 10,
+		borderRadius: 5
+	},
+	removeButtonText: {
+		color: 'white',
+		fontWeight: '500',
+		fontSize: 16
 	}
 })
 

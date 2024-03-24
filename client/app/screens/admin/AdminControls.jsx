@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import * as yup from 'yup'
 import { authorizeAdmin } from '../../../api/auth'
@@ -11,6 +11,7 @@ import { useTheme } from '../../context/ThemeProvider'
 import { useAuthUpdate } from '../../context/UserProvider'
 import CreateUserForm from './users/CreateUserForm'
 import UsersList from './users/UsersList'
+import { useIsFocused } from '@react-navigation/native'
 
 const AdminControls = ({ navigation }) => {
 	const { themeStyles } = useTheme()
@@ -18,6 +19,7 @@ const AdminControls = ({ navigation }) => {
 	const [organization, setOrganization] = useState()
 	const [isRefreshing, setIsRefreshing] = useState(true)
 	const [isModalOpen, setIsModalOpen] = useState(false)
+	const isFocused = useIsFocused()
 
 	const initialValues = { organization: '' }
 	const schema = yup.object({
@@ -33,6 +35,9 @@ const AdminControls = ({ navigation }) => {
 			})
 		handleRefresh()
 	}, [])
+	useEffect(() => {
+		if (isFocused) handleRefresh()
+	}, [isFocused])
 
 	const handleRefresh = () => {
 		setIsRefreshing(true)
@@ -60,6 +65,15 @@ const AdminControls = ({ navigation }) => {
 	const handleUserCreate = (values, onSubmitProps) => {
 		const userData = Object.entries(values).reduce((result, [field, value]) => result = ({ ...result, [field]: value.trim() }), {})
 		createUser(userData)
+			.then(response => {
+				alert(response.message)
+				setIsModalOpen(false)
+				handleRefresh()
+			})
+			.catch(error => {
+				if (error.message) return alert(error.message)
+				alert(error)
+			})
 			.finally(() => onSubmitProps.setSubmitting(false))
 	}
 
