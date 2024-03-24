@@ -31,7 +31,7 @@ const addProduct = async (productInfo) => {
 
 const updateProduct = async ({ id, ...rest }) => {
 	try {
-		const update = await Product.findOne({ where: { id } })
+		await Product.findOne({ where: { id } })
 			.then(product => {
 				if (!product) throw { status: 404, message: 'Товар не найден!' }
 				Object.entries(rest).forEach(([key, value]) => {
