@@ -57,7 +57,7 @@ const updateUser = async (userData) => {
 	try {
 		await User.findOne({ where: { id } })
 			.then(user => {
-				if (!user) throw { status: 200, message: 'Пользователя не существует!' }
+				if (!user) throw { status: 404, message: 'Пользователя не существует!' }
 				Object.entries(rest).forEach(([key, value]) => {
 					user[key] = value
 				})

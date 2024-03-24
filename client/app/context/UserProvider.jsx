@@ -48,6 +48,7 @@ const UserProvider = ({ children }) => {
 	useEffect(() => {
 		authorizeUser()
 			.then(async (response) => {
+				console.log(response)
 				dispatch({ type: 'login', setAdmin: response.isAdmin, permissions: response.permissions })
 			})
 			.catch((error) => {

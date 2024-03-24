@@ -7,6 +7,7 @@ import CreateOrder from "./CreateOrder"
 import { createDeal, getDeals } from "../../../api/sales"
 import SalesList from "../../components/SalesList"
 import { useIsFocused } from "@react-navigation/native"
+import { useAuth } from "../../context/UserProvider"
 
 const translationMap = {
 	name: 'Название',
@@ -28,6 +29,7 @@ const Shop = ({ route }) => {
 	const shopDebt = useMemo(() => {
 		return sales.reduce((total, sale) => total += sale.debt, 0)
 	}, [sales])
+	const { isAdmin, permissions } = useAuth()
 
 	useEffect(() => {
 		getProducts()
@@ -70,16 +72,20 @@ const Shop = ({ route }) => {
 			)
 			)}
 			<View style={styles.section}>
-				{!!products.length && (
+				{!!products.length && (isAdmin || permissions.includes('createSale')) && (
 					<CustomModal isOpen={modalOpen} onClose={() => setModalOpen(false)} title='Создать продажу'>
 						<CreateOrder products={products} onDealCreate={handleDealCreate} />
 					</CustomModal>
 				)}
 				<View style={[styles.container, styles.sectionHeader]}>
 					<Text style={[themeStyles.text, styles.title]}>Продажи</Text>
-					<TouchableOpacity style={styles.buttonContainer} onPress={() => setModalOpen(true)}>
-						<Text style={styles.buttonText}>Создать продажу +</Text>
-					</TouchableOpacity>
+					{
+						(isAdmin || permissions.includes('createSale')) && (
+							<TouchableOpacity style={styles.buttonContainer} onPress={() => setModalOpen(true)}>
+								<Text style={styles.buttonText}>Создать продажу +</Text>
+							</TouchableOpacity>
+						)
+					}
 					{!!sales.length && <SalesList sales={sales} />}
 				</View>
 			</View>

@@ -25,7 +25,7 @@ const SignInScreen = ({ navigation }) => {
 			.then(async (response) => {
 				await EncryptedStorage.setItem('token', response.JWT)
 				authorizeUser().then(response => {
-					updateUserState({ type: 'login', setAdmin: response.isAdmin })
+					updateUserState({ type: 'login', setAdmin: response.isAdmin, permissions: response.permissions })
 				})
 			})
 			.catch(error => {

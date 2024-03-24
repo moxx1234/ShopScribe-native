@@ -18,7 +18,7 @@ const Products = () => {
 	const [modalOpen, setModalOpen] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
 	const [products, setProducts] = useState()
-	const { isAdmin } = useAuth()
+	const { isAdmin, permissions } = useAuth()
 
 	useEffect(() => {
 		getProducts()
@@ -71,7 +71,7 @@ const Products = () => {
 		<View style={{ flex: 1 }}>
 			<ProductsList onRefresh={handleRefresh} isRefreshing={isLoading} data={products} />
 			{
-				isAdmin && (
+				(isAdmin || permissions.includes('addProduct')) && (
 					<>
 						<CustomModal isOpen={modalOpen} onClose={handleClose} title='Добавить товар'>
 							<Form initialValues={initialValues} schema={schema} onSubmit={handleSubmit}>
