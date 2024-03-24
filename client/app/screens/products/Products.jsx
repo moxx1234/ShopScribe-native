@@ -21,12 +21,7 @@ const Products = () => {
 	const { isAdmin, permissions } = useAuth()
 
 	useEffect(() => {
-		getProducts()
-			.then(response => {
-				setProducts(response.products)
-			})
-			.catch(error => console.error(error))
-			.finally(() => setIsLoading(false))
+		handleRefresh()
 	}, [])
 
 	const initialValues = { name: '', category: '', units: '', price: '', quantity: '' }
@@ -63,7 +58,10 @@ const Products = () => {
 			.then(response => {
 				setProducts(response.products)
 			})
-			.catch(error => console.error(error))
+			.catch(error => {
+				if (error.message) return alert(error.message)
+				console.log(error)
+			})
 			.finally(() => setIsLoading(false))
 	}
 

@@ -19,7 +19,7 @@ const userReducer = (state, action) => {
 				isLoading: false,
 				isSignedIn: true,
 				isAdmin: action.setAdmin || state.isAdmin,
-				permissions: action.permissions
+				permissions: action.permissions || []
 			}
 		}
 		case 'logout': {
@@ -34,7 +34,7 @@ const userReducer = (state, action) => {
 			return {
 				...state,
 				isAdmin: action.setAdmin,
-				permissions: action.permissions
+				permissions: action.permissions || []
 			}
 		}
 	}

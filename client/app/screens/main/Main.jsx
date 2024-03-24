@@ -19,7 +19,10 @@ const Main = () => {
 		setIsRefreshing(true)
 		getShops()
 			.then(response => { setShops(response.shops) })
-			.catch(error => console.error(error))
+			.catch(error => {
+				if (error.message) return alert(error.message)
+				console.log(error)
+			})
 			.finally(() => setIsRefreshing(false))
 	}
 

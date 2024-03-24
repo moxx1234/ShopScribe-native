@@ -27,7 +27,10 @@ const Reports = () => {
 		setIsRefreshing(true)
 		getSales()
 			.then(response => { setSales(response.sales) })
-			.catch(error => console.error(error))
+			.catch(error => {
+				if (error.message) return alert(error.message)
+				console.log(error)
+			})
 			.finally(() => setIsRefreshing(false))
 	}
 
