@@ -11,7 +11,8 @@ import { trimForm } from "../../../helpers/trimForm"
 const permissionTitles = {
 	addShop: 'Добавление магазина',
 	addProduct: 'Добавление товара',
-	createSale: 'Создание продажи'
+	createSale: 'Создание продажи',
+	updateProduct: 'Изменение товара'
 }
 
 const UserPage = ({ route, navigation }) => {
@@ -22,7 +23,8 @@ const UserPage = ({ route, navigation }) => {
 	const [permissions, setPermissions] = useState({
 		addShop: user.permissions.includes('addShop'),
 		addProduct: user.permissions.includes('addProduct'),
-		createSale: user.permissions.includes('createSale')
+		createSale: user.permissions.includes('createSale'),
+		updateProduct: user.permissions.includes('updateProduct')
 	})
 
 	useEffect(() => {

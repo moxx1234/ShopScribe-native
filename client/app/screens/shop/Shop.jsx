@@ -39,8 +39,8 @@ const Shop = ({ route }) => {
 		getSales()
 	}, [isFocused])
 
-	const handleDealCreate = (dealInfo) => {
-		createDeal(shop.id, dealInfo)
+	const handleDealCreate = async (dealInfo) => {
+		await createDeal(shop.id, dealInfo)
 			.then(response => {
 				if (response.message) {
 					setModalOpen(false)

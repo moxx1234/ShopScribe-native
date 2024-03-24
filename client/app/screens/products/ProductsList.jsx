@@ -3,11 +3,13 @@ import Table from "../../components/table/Table"
 import { useEffect, useState } from "react"
 import { useTheme } from "../../context/ThemeProvider"
 import { useNavigation } from "@react-navigation/native"
+import { useAuth } from "../../context/UserProvider"
 
 const ProductsList = ({ onRefresh, isRefreshing, data }) => {
 	const [tableData, setTableData] = useState()
 	const { themeStyles } = useTheme()
 	const navigation = useNavigation()
+	const { isAdmin, permissions } = useAuth()
 
 	useEffect(() => {
 		if (!data || !data.length) return setTableData(undefined)
@@ -20,7 +22,8 @@ const ProductsList = ({ onRefresh, isRefreshing, data }) => {
 
 	const handleChoice = (id) => {
 		const product = data.find(product => product.id === id)
-		navigation.navigate('Product', { product })
+
+		if (isAdmin || permissions.includes('updateProduct')) navigation.navigate('Product', { product })
 	}
 
 	return (

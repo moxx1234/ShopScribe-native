@@ -14,6 +14,7 @@ const CreateOrder = ({ products, onDealCreate }) => {
 	const [totalAmount, setTotalAmount] = useState(0)
 	const [debt, setDebt] = useState(0)
 	const [withDebt, setWithDept] = useState(false)
+	const [isSubmitting, setIsSubmitting] = useState(false)
 	const { themeStyles } = useTheme()
 
 	useEffect(() => {
@@ -38,34 +39,47 @@ const CreateOrder = ({ products, onDealCreate }) => {
 	const handleSubmit = (values, onSubmitProps) => {
 		const productFromCatalogue = products.find(product => product.id === values.product)
 		const { id, name, price, quantity, units } = productFromCatalogue
-		setAddedProducts(prevAdded => {
-			if (quantity === 0) return prevAdded
-			const existingProductIndex = prevAdded.findIndex(product => product.id === id)
+
+		const existingProduct = addedProducts.find(product => product.id === id)
+
+		if (!existingProduct) {
+			// If product has not been added yet
+			setAddedProducts(prev => (
+				[
+					...prev,
+					{ id, name, quantity: Number(quantity) >= Number(values.quantity) ? Number(values.quantity) : Number(quantity), units, price, total: values.quantity * price }
+				]
+			))
+		} else {
 			// If product had been added
-			if (existingProductIndex !== -1) {
-				let sellingQty = 0
-				if (Number(quantity) >= Number(values.quantity) + Number(prevAdded[existingProductIndex].quantity)) sellingQty = Number(values.quantity)
-				else sellingQty = Number(quantity) - prevAdded[existingProductIndex].quantity
-				prevAdded[existingProductIndex].quantity += sellingQty
-				prevAdded[existingProductIndex].total += price * sellingQty
+			let sellingQty = 0
+			const prevQty = Number(existingProduct.quantity)
+
+			if (Number(quantity) >= (Number(values.quantity) + prevQty)) sellingQty = Number(values.quantity)
+			else sellingQty = Number(quantity) - prevQty
+
+			const modifiedProduct = { ...existingProduct, quantity: prevQty + sellingQty, total: existingProduct.total + price * sellingQty }
+
+			const existingProductIndex = addedProducts.findIndex(product => product.id === id)
+			setAddedProducts(prev => {
+				const prevAdded = [...prev]
+				prevAdded[existingProductIndex] = modifiedProduct
 				return prevAdded
-			}
-			return [
-				...prevAdded,
-				{ id, name, quantity: Number(quantity) >= Number(values.quantity) ? Number(values.quantity) : Number(quantity), units, price, total: values.quantity * price }
-			]
-		})
+			})
+		}
+
 		onSubmitProps.resetForm()
 		onSubmitProps.setSubmitting(false)
 	}
 
 	const handleDealCreate = () => {
+		setIsSubmitting(true)
 		const dealInfo = {
 			products: addedProducts,
 			debt,
 			total: totalAmount
 		}
-		onDealCreate(dealInfo)
+		onDealCreate(dealInfo).finally(() => setIsSubmitting(false))
 	}
 
 	const formatOptions = (data) => {
@@ -115,7 +129,7 @@ const CreateOrder = ({ products, onDealCreate }) => {
 							<Text style={[themeStyles.text, styles.text]}>Итого:</Text>
 							<Text style={[themeStyles.text, styles.text]}>{totalAmount}</Text>
 						</View>
-						<TouchableOpacity style={styles.buttonWrapper} onPress={handleDealCreate}>
+						<TouchableOpacity style={styles.buttonWrapper} onPress={handleDealCreate} disabled={isSubmitting}>
 							<Text style={styles.buttonText}>Создать продажу</Text>
 						</TouchableOpacity>
 					</View>
