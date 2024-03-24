@@ -17,8 +17,8 @@ const login = async (userData) => {
 		where: {
 			login
 		}
-	}).then(user => {
-		if (!user.authenticate(password)) throw { status: 401, message: 'Неверный пароль! Попробуйте ещё раз!', field: 'password' }
+	}).then((user) => {
+		if (!user.isValidPassword(password)) throw { status: 401, message: 'Неверный пароль! Попробуйте ещё раз!', field: 'password' }
 		return { status: 200, id: user.id, isAdmin: user.isAdmin, permissions: user.isAdmin ? ['all'] : user.permissions, message: 'user has logged in' }
 	}).catch((error) => {
 		if (error.status === 401) throw error

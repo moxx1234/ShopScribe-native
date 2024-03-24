@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize')
-const useBcrypt = require('sequelize-bcrypt')
+const bcrypt = require('bcrypt')
 
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
 	host: process.env.DB_HOST,
@@ -57,6 +57,19 @@ const User = sequelize.define('user', {
 		},
 		set(val) {
 			this.setDataValue('permissions', val?.join(';')) || null
+		}
+	},
+}, {
+	hooks: {
+		beforeCreate: async (user) => {
+			const salt = await bcrypt.genSalt()
+			user.password = await bcrypt.hash(user.password, salt)
+		},
+		beforeUpdate: async (user) => {
+			if (user.changed('password')) {
+				const salt = await bcrypt.genSalt()
+				user.password = await bcrypt.hash(user.password, salt)
+			}
 		}
 	}
 })
@@ -174,6 +187,10 @@ ProductSale.belongsTo(Product)
 Product.hasMany(ProductSale)
 Product.belongsTo(Organization)
 
+User.prototype.isValidPassword = function (password) {
+	return bcrypt.compareSync(password, this.password)
+}
+
 // Hooks
 const updateShopDebt = async (shopSale, options) => {
 	const { dataValues } = await ShopSale.findOne({
@@ -195,11 +212,5 @@ ShopSale.addHook('afterDestroy', 'updateShopDebt', updateShopDebt)
 sequelize.sync({ alter: true }).then(() => {
 	console.log('tables had been synchronised')
 }).catch((err) => console.log('table sync error', err))
-
-useBcrypt(User, {
-	field: 'password',
-	rounds: 12,
-	compare: 'authenticate'
-})
 
 module.exports = { sequelize, User, Shop, Product, ProductSale, ShopSale, Organization }

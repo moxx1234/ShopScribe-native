@@ -55,7 +55,14 @@ const createUser = async (organizationId, userData) => {
 const updateUser = async (userData) => {
 	const { id, ...rest } = userData
 	try {
-		await User.update(rest, { where: { id } })
+		await User.findOne({ where: { id } })
+			.then(user => {
+				if (!user) throw { status: 200, message: 'Пользователя не существует!' }
+				Object.entries(rest).forEach(([key, value]) => {
+					user[key] = value
+				})
+				user.save()
+			})
 		return { status: 200, message: 'Информация о работнике обновлена!' }
 	} catch (error) {
 		if (error.name === 'SequelizeUniqueConstraintError') {
