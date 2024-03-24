@@ -6,15 +6,10 @@ const DateReport = ({ navigation, route }) => {
 	const { params } = route
 	const { themeStyles } = useTheme()
 
-	params.sales.forEach(sale => {
-		console.log(sale.product_sales)
-	})
-
 	useEffect(() => {
 		navigation.setOptions({
 			title: `Отчет за ${params.date}`
 		})
-
 	}, [])
 
 	return (
