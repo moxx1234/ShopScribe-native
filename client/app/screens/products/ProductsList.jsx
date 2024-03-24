@@ -9,8 +9,6 @@ const ProductsList = ({ onRefresh, isRefreshing, data }) => {
 	const { themeStyles } = useTheme()
 	const navigation = useNavigation()
 
-	console.log(data)
-
 	useEffect(() => {
 		if (!data || !data.length) return setTableData(undefined)
 		const newData = {

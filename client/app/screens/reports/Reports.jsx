@@ -5,18 +5,16 @@ import { getSales } from "../../../api/organizations"
 import Table from "../../components/table/Table"
 import { useAuthUpdate } from '../../context/UserProvider'
 import { getFormattedDate } from "../../helpers/formatDate"
+import { RefreshControl, ScrollView } from "react-native"
 
 const Reports = () => {
 	const updateUser = useAuthUpdate()
 	const [sales, setSales] = useState()
+	const [isRefreshing, setIsRefreshing] = useState(false)
 	const navigation = useNavigation()
 
-	console.log(sales)
-
 	useEffect(() => {
-		getSales()
-			.then(response => setSales(response.sales))
-			.catch(error => console.error(error))
+		refresh()
 		authorizeAdmin()
 			.catch(error => {
 				console.error(error)
@@ -24,6 +22,14 @@ const Reports = () => {
 				updateUser({ type: 'checkAdmin', setAdmin: false })
 			})
 	}, [])
+
+	const refresh = () => {
+		setIsRefreshing(true)
+		getSales()
+			.then(response => { setSales(response.sales) })
+			.catch(error => console.error(error))
+			.finally(() => setIsRefreshing(false))
+	}
 
 	const createTableBody = (data) => {
 		const dayTotals = data.reduce((result, item) => {
@@ -51,8 +57,11 @@ const Reports = () => {
 		navigation.navigate('Report', { sales: desiredSales, date })
 	}
 	return (
-		// <></>
-		sales && <Table data={tableData} onRowPress={handleDateSelect} />
+		<ScrollView
+			refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}
+		>
+			{sales && <Table data={tableData} onRowPress={handleDateSelect} />}
+		</ScrollView>
 	)
 }
 
