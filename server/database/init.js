@@ -211,7 +211,7 @@ ShopSale.addHook('afterCreate', 'updateShopDebt', updateShopDebt)
 ShopSale.addHook('afterUpdate', 'updateShopDebt', updateShopDebt)
 ShopSale.addHook('afterDestroy', 'updateShopDebt', updateShopDebt)
 
-sequelize.sync({ alter: true }).then(() => {
+sequelize.sync({ force: true }).then(() => {
 	console.log('tables had been synchronised')
 }).catch((err) => console.log('table sync error', err))
 
