@@ -1,11 +1,11 @@
 import { useNavigation } from "@react-navigation/native"
 import { useEffect, useState } from "react"
+import { Alert, RefreshControl, ScrollView } from "react-native"
 import { authorizeAdmin } from '../../../api/auth'
 import { getSales } from "../../../api/organizations"
 import Table from "../../components/table/Table"
 import { useAuthUpdate } from '../../context/UserProvider'
 import { getFormattedDate } from "../../helpers/formatDate"
-import { RefreshControl, ScrollView } from "react-native"
 
 const Reports = () => {
 	const updateUser = useAuthUpdate()
@@ -28,8 +28,8 @@ const Reports = () => {
 		getSales()
 			.then(response => { setSales(response.sales) })
 			.catch(error => {
-				if (error.message) return alert(error.message)
-				console.log(error)
+				if (error.message) return Alert.alert('Ошибка', error.message)
+				Alert.alert('Ошибка', JSON.stringify(error))
 			})
 			.finally(() => setIsRefreshing(false))
 	}

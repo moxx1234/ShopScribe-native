@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from "react"
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { getProducts } from '../../../api/products'
-import CustomModal from "../../components/CustomModal"
-import { useTheme } from '../../context/ThemeProvider'
-import CreateOrder from "./CreateOrder"
-import { createDeal, getDeals } from "../../../api/sales"
-import SalesList from "../../components/SalesList"
 import { useIsFocused } from "@react-navigation/native"
+import { useEffect, useState } from "react"
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { getProducts } from '../../../api/products'
+import { createDeal, getDeals } from "../../../api/sales"
+import CustomModal from "../../components/CustomModal"
+import SalesList from "../../components/SalesList"
+import { useTheme } from '../../context/ThemeProvider'
 import { useAuth } from "../../context/UserProvider"
+import CreateOrder from "./CreateOrder"
 
 const translationMap = {
 	name: 'Название',
@@ -45,10 +45,10 @@ const Shop = ({ route }) => {
 				if (response.message) {
 					setModalOpen(false)
 					getSales()
-					return alert(response.message)
+					return Alert.alert('Продажа', response.message)
 				}
 			})
-			.catch(error => console.error(error))
+			.catch(error => Alert.alert('Ошибка', error))
 	}
 
 	const getSales = () => {

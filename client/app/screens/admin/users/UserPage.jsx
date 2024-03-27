@@ -80,11 +80,11 @@ const UserPage = ({ route, navigation }) => {
 						return res = { ...res, [key]: values[key] }
 					}, {})
 				})
-				alert(response.message)
+				Alert.alert('Работник', response.message)
 			})
 			.catch(error => {
 				if (error.field) return onSubmitProps.setErrors({ [error.field]: [error.message] })
-				alert(error)
+				Alert.alert('Ошибка', error)
 			})
 			.finally(() => onSubmitProps.setSubmitting(false))
 	}
@@ -98,12 +98,12 @@ const UserPage = ({ route, navigation }) => {
 
 		deleteUser(user.id)
 			.then(response => {
-				alert(response.message)
+				Alert.alert('Работник', response.message)
 				navigation.goBack()
 			})
 			.catch(error => {
-				if (error.message) return alert(error.message)
-				alert(error)
+				if (error.message) return Alert.alert('Ошибка', JSON.stringify(error.message))
+				Alert.alert('Ошибка', error)
 			})
 	}
 

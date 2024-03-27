@@ -1,5 +1,5 @@
 import EncryptedStorage from 'react-native-encrypted-storage'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native'
 import * as yup from 'yup'
 import { authenticateUser, authorizeUser } from '../../../api/auth'
 import Form from '../../components/form/Form'
@@ -30,7 +30,7 @@ const SignInScreen = ({ navigation }) => {
 			})
 			.catch(error => {
 				if (error.field) return onSubmitProps.setErrors({ [error.field]: [error.message] })
-				alert(error)
+				Alert.alert('Ошибка', error)
 			})
 			.finally(() => { onSubmitProps.setSubmitting(false) })
 	}

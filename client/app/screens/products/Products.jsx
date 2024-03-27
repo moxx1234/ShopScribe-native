@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, View, Alert } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import * as yup from 'yup'
 import { addProduct, getProducts } from '../../../api/products'
@@ -38,14 +38,14 @@ const Products = () => {
 		const trimmedValues = Object.entries(values).reduce((result, [field, value]) => result = ({ ...result, [field]: value.trim() }), {})
 		addProduct(trimmedValues)
 			.then(response => {
-				alert(response.message)
+				Alert.alert('Товар', response.message)
 				setModalOpen(false)
 				handleRefresh()
 			})
 			.catch(error => {
 				if (error.field) return onSubmitProps.setErrors({ [error.field]: [error.message] })
-				if (error.message) return alert(error.message)
-				alert(error)
+				if (error.message) return Alert.alert('Ошибка', error.message)
+				Alert.alert('Ошибка', error)
 			})
 			.finally(() => { onSubmitProps.setSubmitting(false) })
 	}
@@ -59,8 +59,8 @@ const Products = () => {
 				setProducts(response.products)
 			})
 			.catch(error => {
-				if (error.message) return alert(error.message)
-				console.log(error)
+				if (error.message) return Alert.alert('Ошибка', error.message)
+				Alert.alert('Ошибка', error)
 			})
 			.finally(() => setIsLoading(false))
 	}

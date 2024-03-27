@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useState } from 'react'
-import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native'
 import * as yup from 'yup'
 import { authorizeAdmin } from '../../../api/auth'
 import { createOrg, createUser, getOrgUsers } from '../../../api/organizations'
@@ -29,7 +29,6 @@ const AdminControls = ({ navigation }) => {
 	useLayoutEffect(() => {
 		authorizeAdmin()
 			.catch(error => {
-				console.error(error)
 				navigation.navigate('Home')
 				updateUser({ type: 'checkAdmin', setAdmin: false, permissions: null })
 			})
@@ -48,7 +47,7 @@ const AdminControls = ({ navigation }) => {
 				if (!org) return
 				setOrganization({ [org]: Object.values(response)[0] })
 			})
-			.catch(error => alert(error))
+			.catch(error => Alert.alert('Ошибка', JSON.stringify(error)))
 			.finally(() => setIsRefreshing(false))
 	}
 
@@ -57,7 +56,7 @@ const AdminControls = ({ navigation }) => {
 			.then(() => handleRefresh())
 			.catch(error => {
 				if (error.field) return onSubmitProps.setErrors({ [error.field]: [error.message] })
-				alert(error)
+					.catch(error => Alert.alert('Ошибка', JSON.stringify(error)))
 			})
 			.finally(() => onSubmitProps.setSubmitting(false))
 	}
@@ -66,13 +65,13 @@ const AdminControls = ({ navigation }) => {
 		const userData = Object.entries(values).reduce((result, [field, value]) => result = ({ ...result, [field]: value.trim() }), {})
 		createUser(userData)
 			.then(response => {
-				alert(response.message)
+				response => Alert.alert('Работник', response.message)
 				setIsModalOpen(false)
 				handleRefresh()
 			})
 			.catch(error => {
-				if (error.message) return alert(error.message)
-				alert(error)
+				if (error.message) return Alert.alert('Ошибка', error.message)
+				Alert.alert('Ошибка', JSON.stringify(error))
 			})
 			.finally(() => onSubmitProps.setSubmitting(false))
 	}

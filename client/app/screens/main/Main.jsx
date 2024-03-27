@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View, Alert } from "react-native"
 import { ScrollView } from "react-native-gesture-handler"
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { addShop, getShops } from "../../../api/shops"
@@ -20,8 +20,8 @@ const Main = () => {
 		getShops()
 			.then(response => { setShops(response.shops) })
 			.catch(error => {
-				if (error.message) return alert(error.message)
-				console.log(error)
+				if (error.message) return Alert.alert('Ошибка', error.message)
+				Alert.alert('Ошибка', error)
 			})
 			.finally(() => setIsRefreshing(false))
 	}
@@ -34,14 +34,14 @@ const Main = () => {
 		const trimmedValues = Object.entries(values).reduce((result, [field, value]) => result = ({ ...result, [field]: value.trim() }), {})
 		addShop(trimmedValues)
 			.then(response => {
-				alert(response.message)
+				Alert.alert('Магазин', response.message)
 				setModalOpen(false)
 				refresh()
 			})
 			.catch(error => {
 				if (error.field) return onSubmitProps.setErrors({ [error.field]: [error.message] })
-				if (error.message) return alert(error.message)
-				alert(error)
+				if (error.message) return Alert.alert('Ошибка', error.message)
+				Alert.alert('Ошибка', error)
 			})
 			.finally(() => { onSubmitProps.setSubmitting(false) })
 	}

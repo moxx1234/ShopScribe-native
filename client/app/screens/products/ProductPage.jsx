@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView } from "react-native"
+import { StyleSheet, Text, View, ScrollView, Alert } from "react-native"
 import { useTheme } from "../../context/ThemeProvider"
 import * as yup from 'yup'
 import Form from "../../components/form/Form"
@@ -38,11 +38,11 @@ const ProductPage = ({ route }) => {
 						return res = { ...res, [key]: values[key] }
 					}, {})
 				})
-				alert(response.message)
+				Alert.alert('Товар', response.message)
 			})
 			.catch(error => {
 				if (error.field) return onSubmitProps.setErrors({ [error.field]: [error.message] })
-				alert(error)
+				Alert.alert('Ошибка', error)
 			})
 			.finally(() => onSubmitProps.setSubmitting(false))
 	}
